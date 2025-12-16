@@ -15,15 +15,26 @@ The primary goal of this project is to provide a simple, reliable, and programma
 These user stories define the specific actions a consumer of our API should be able to perform. Each story will directly translate into an API endpoint.
 
 ---
+### To-Do list
 
 ### Story 1: Create a To-Do List
 
-- **As a user, I want to create a new task with a title, so that I can add new items to my to-do list.**
+- **As a user, I want to create a new To-Do list with a title, so that I can group and manage my list tasks.**
 - **Acceptance Criteria:**
-    - A task must have a `title`.
-    - A new task should default to being "not completed".
-    - The API should return the newly created task data upon success.
+    - A To-Do list must have a `title`.
+    - A To-Do list should by default have "New" status.
+    - The API should return the newly created To-Do list data upon success.
 
+### Story 2: View All To-Do lists
+
+- **As a user, I want to retrieve a list of all my To-Do lists, so that I can see everything I need to do.**
+- **Acceptance Criteria:**
+    - The API should return a list (array) of all existing tasks.
+    - If there are no tasks, the API should return an empty list.
+
+
+
+### Task
 
 ### Story X: Create a Task
 
