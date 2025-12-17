@@ -1,4 +1,4 @@
-# Project Requirements: TO-DO List API
+# Requirements Document: TO-DO List API
 
 This document outlines the business goals and user stories for the TO-DO List API.
 
@@ -8,7 +8,7 @@ The primary goal of this project is to provide a simple, reliable, and programma
 
 - **Problem Solved:** It solves the user problem of needing a centralized, accessible way to track their to-dos from any application.
 - **Core Functionality:** The API will serve as the backend foundation for any client application (e.g., a web app, mobile app, or command-line tool) that needs to offer task management functionality.
-- **Target Audience:** Developers who need a simple task management backend for their applications.
+- **Target Audience:** Business Users / Stakeholders
 
 ## 2. User Stories
 
@@ -24,15 +24,48 @@ These user stories define the specific actions a consumer of our API should be a
     - A To-Do list must have a `title`.
     - A To-Do list should by default have "New" status.
     - The API should return the newly created To-Do list data upon success.
+    - The API should return the To-Do list showing ID, Title, Creation Date, and Status.
 
 ### Story 2: View All To-Do lists
 
-- **As a user, I want to retrieve a list of all my To-Do lists, so that I can see everything I need to do.**
+- **As a user, I want to retrieve a list of all my To-Do lists, so that I can see and review them.**
 - **Acceptance Criteria:**
-    - The API should return a list (array) of all existing tasks.
-    - If there are no tasks, the API should return an empty list.
+    - The API should return a list (array) of lists that are not in 'Deleted' status.
+    - Each item in the returned list should contain the To-Do list's ID, Title, Description, Status, Due Date, and Creation Date.
+    - If there are no lists, the API should return an empty list.
 
 
+### Story 3: View To-Do list
+
+- **As a user, I want to retrieve a To-Do list, so that I can review it.**
+- **Acceptance Criteria:**
+    - The API call must specify the unique ID of the To-Do list to be retrieved.
+    - If a To-Do list with the given ID exists and is not in a 'Deleted' status, the API should return its full details.
+    - The returned data must include the list's ID, Title, Creation Date, and Status.
+    - If no list exists with the given ID, or if the list is in a 'Deleted' status, the API should return a 404 Not Found error.
+
+### Story 4: Update To-Do list
+
+- **As a user, I want to update a To-Do list, so that it can be up to date.**
+- **Acceptance Criteria:**
+    - The API call must specify the unique ID of the To-Do list to be updated.
+    - The API call must include a request body containing the fields to be updated. The updatable fields are Title, Description, and Due Date.
+    - If a To-Do list with the given ID exists and is not in a 'Deleted' status, the API should update it with the provided data.
+    -  Upon a successful update, the API should return the complete and updated To-Do list details.
+    - If a To-Do list is in a 'Deleted' status, it cannot be updated.
+    - If no list exists with the given ID, or if the list is in a 'Deleted' status, the API should return a 404 Not Found error.
+
+### Story 5: Delete To-Do list
+
+- **As a user, I want to update a To-Do list, so that it can be up to date.**
+- **Acceptance Criteria:**
+    - The API call must specify the unique ID of the To-Do list to be deleted.
+    - The API call must include a request body containing the fields to be updated. The updatable fields are Title, Description, and Due Date.
+    - If a To-Do list with the given ID exists and is not in a 'Deleted' status, the API should update it with the provided data.
+    - Upon a successful update, the API should return the complete and updated To-Do list details.
+    -  
+    - If no list exists with the given ID, or if the list contains at least one task with other statuses than Completed or Defered, the API should return a 404 Not Found error.
+    - If the list with the given ID is in a 'Deleted' status, the API should return a 409 Conflict error.
 
 ### Task
 
