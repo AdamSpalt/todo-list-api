@@ -19,12 +19,11 @@ These user stories define the specific actions a consumer of our API should be a
 
 ### Story 1: Create a To-Do List
 
-- **As a user, I want to create a new To-Do list with a title, so that I can group and manage my list tasks.**
+- **As a user, I want to create a new To-Do list, so that I can group and manage my list tasks.**
 - **Acceptance Criteria:**
     - A To-Do list must have a `title`.
     - A To-Do list should by default have "New" status.
     - The API should return the newly created To-Do list, showing its `ID`, `Title`, `Description`, `Status`, `Due Date`, and `Creation Date`.
-    - The API should return the To-Do list showing ID, Title, Creation Date, and Status.
 
 ### Story 2: View All To-Do lists
 
@@ -76,35 +75,41 @@ These user stories define the specific actions a consumer of our API should be a
 
 ### Task
 
-### Story X: Create a Task
+### Story 7: Create a Task
 
-- **As a user, I want to create a new task with a title, so that I can add new items to my to-do list.**
+- **As a user, I want to create a new To-Do list Task, so that I can plan and trace my work.**
 - **Acceptance Criteria:**
-    - A task must have a `title`.
-    - A new task should default to being "not completed".
-    - The API should return the newly created task data upon success.
+    - The API call needs to provide the To-Do list ID to which a task needs to be assigned.
+    - The request body must contain a `title` for the task.
+    - The request body may optionally contain a `Description`, `Priority`, and `Due Date`.
+    - A Task should by default have "New" status.
+    - Upon successful creation, the API should return a `201 Created` status and the complete data for the new task.
+    - The API should return the newly created Task, showing its `ID`, `Title`, `Description`, `Status`, `Priority`, `Due Date`, and `Creation date`.
+    - If the request body is missing the required `title` field, the API should return a `400 Bad Request` error.
+    - If the specified parent list `ID` does not correspond to an existing list, the API should return a `404 Not Found` error.
+    - If the specified parent list is in a 'Deleted' or 'Deferred' status, the API should return a `409 Conflict` error. `Creation Date`.
 
----
-
-### Story X: View All Tasks
-
-- **As a user, I want to retrieve a list of all my tasks, so that I can see everything I need to do.**
-- **Acceptance Criteria:**
-    - The API should return a list (array) of all existing tasks.
-    - If there are no tasks, the API should return an empty list.
-
----
-
-### Story X: View a Single Task
+### Story 8: View a Single Task
 
 - **As a user, I want to view the details of a single, specific task, so that I can focus on one item.**
 - **Acceptance Criteria:**
-    - The user must provide a unique identifier for the task they want to see.
-    - If the task is found, the API should return its complete data.
-    - If no task with that ID exists, the API should return an appropriate "Not Found" error.
+    - The API call must specify the unique `ID` of the parent To-Do list and the unique `ID` of the task to be retrieved.
+    - The API should return the Task details, showing its `ID`, `Title`, `Description`, `Status`, `Priority`, `Due Date`, and `Creation date`.
+    - If the specified parent list `ID` or task `ID` does not exist, or if the task is in a 'Deleted' status, the API should return a `404 Not Found` error.
 
----
+ 
+### Story 9: View All To-Do List Tasks
 
+- **As a user, I want to retrieve a list of all my To-Do list tasks, so that I can see everything I need to do.**
+- **Acceptance Criteria:**
+    - The API call must specify the unique `ID` of the parent To-Do list for the tasks to be retrieved.
+    - The API should return a list (array) of To-Do list tasks that are not in 'Deleted' status.
+    - If there are no tasks assigned to the To-Do list, the API should return an empty list.
+    - The API should return the To-Do Tasks list, showing Tasks `ID`, `Title`, `Description`, `Status`, `Priority`, `Due Date`, and `Creation date`.
+    - If the specified parent list `ID` does not exist, or if the To-Do list is in a 'Deleted' status, the API should return a `404 Not Found` error.
+
+
+[In progress]
 ### Story X: Update a Task
 
 - **As a user, I want to update an existing task (e.g., change its title or mark it as complete), so that I can keep my task list current.**
@@ -115,6 +120,14 @@ These user stories define the specific actions a consumer of our API should be a
     - If no task with that ID exists, the API should return a "Not Found" error.
 
 ---
+
+### Story X: Defer a Task
+
+- **As a user, I want to delete a task, so that I can remove completed or unnecessary items from my list.**
+- **Acceptance Criteria:**
+    - The user must provide the unique ID of the task to delete.
+    - If the task is successfully deleted, the API should return a success confirmation.
+    - If no task with that ID exists, the API should return a "Not Found" error.
 
 ### Story X: Delete a Task
 
