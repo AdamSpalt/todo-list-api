@@ -51,21 +51,32 @@ These user stories define the specific actions a consumer of our API should be a
     - The API call must specify the unique ID of the To-Do list to be updated.
     - The API call must include a request body containing the fields to be updated. The updatable fields are Title, Description, and Due Date.
     - If a To-Do list with the given ID exists and is not in a 'Deleted' status, the API should update it with the provided data.
-    -  Upon a successful update, the API should return the complete and updated To-Do list details.
+    - Upon a successful update, the API should return the complete and updated To-Do list details.
     - If a To-Do list is in a 'Deleted' status, it cannot be updated.
     - If no list exists with the given ID, or if the list is in a 'Deleted' status, the API should return a 404 Not Found error.
 
-### Story 5: Delete To-Do list
+### Story 4: Deferr To-Do list [in progress]
 
 - **As a user, I want to update a To-Do list, so that it can be up to date.**
 - **Acceptance Criteria:**
-    - The API call must specify the unique ID of the To-Do list to be deleted.
+    - The API call must specify the unique ID of the To-Do list to be updated.
     - The API call must include a request body containing the fields to be updated. The updatable fields are Title, Description, and Due Date.
     - If a To-Do list with the given ID exists and is not in a 'Deleted' status, the API should update it with the provided data.
     - Upon a successful update, the API should return the complete and updated To-Do list details.
-    -  
-    - If no list exists with the given ID, or if the list contains at least one task with other statuses than Completed or Defered, the API should return a 404 Not Found error.
-    - If the list with the given ID is in a 'Deleted' status, the API should return a 409 Conflict error.
+    - If a To-Do list is in a 'Deleted' status, it cannot be updated.
+    - If no list exists with the given ID, or if the list is in a 'Deleted' status, the API should return a 404 Not Found error.
+
+
+### Story 6: Delete To-Do list
+
+- **As a user, I want to delete a To-Do list, so that it can be removed.**
+- **Acceptance Criteria:**
+    - The API call must specify the unique ID of the To-Do list to be deleted.
+    - A successful "deletion" will change the list's status to 'Deleted' and 'Is_Deleted' to YES.
+    - If a list with the given ID contains any tasks with a status other than Completed or Deferred, the API should return a 409 Conflict error.
+    - If no list exists with the given ID, the API should return a 404 Not Found error.
+    - Upon a successful deletion (including when the list was already in a 'Deleted' state), the API should return a 204 No Content success status.
+
 
 ### Task
 
