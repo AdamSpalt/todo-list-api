@@ -1,6 +1,6 @@
 # Requirements Document: To-Do List API
 
-This document outlines the business goals and user stories for the To-Do List API.
+This document outlines the business goals, user stories, data model, and business rules for the To-Do List API.
 
 ## 1. Business Goals
 
