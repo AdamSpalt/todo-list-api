@@ -1,4 +1,4 @@
-# Requirements Document: TO-DO List API
+# Requirements Document: To-Do List API
 
 This document outlines the business goals and user stories for the To-Do List API.
 
