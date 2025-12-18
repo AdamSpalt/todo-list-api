@@ -39,7 +39,7 @@ These user stories define the specific actions a consumer of our API should be a
 - **Acceptance Criteria:**
     - The API call must specify the unique ID of the To-Do list to be retrieved.
     - If a To-Do list with the given ID exists and is not in a 'Deleted' status, the API should return its full details.
-    - The returned data must include the list's `ID`, `Title`, `Description`, `Status`, `Due Date`, and `Creation Date`.
+    - The returned data must include the list's `ID`, `Title`, `Description`, `Status`, and `Creation Date`.
     - If no list exists with the given ID, or if the list is in a 'Deleted' status, the API should return a 404 Not Found error.
 
 ### Story 4: Update To-Do list
@@ -47,7 +47,7 @@ These user stories define the specific actions a consumer of our API should be a
 - **As a user, I want to update a To-Do list, so that it can be up to date.**
 - **Acceptance Criteria:**
     - The API call must specify the unique ID of the To-Do list to be updated.
-    - The API call must include a request body containing the fields to be updated. The updatable fields are `title`, `description`, and `due_date`.
+    - The API call must include a request body containing the fields to be updated. The updatable fields are `title` and `description`.
     - If a To-Do list with the given ID exists and is not in a 'Deleted' status, the API should update it with the provided data.
     - Upon a successful update, the API should return the complete and updated To-Do list details.
     - If no list exists with the given ID, or if the list is in a 'Deleted' status, the API should return a 404 Not Found error.
@@ -108,31 +108,34 @@ These user stories define the specific actions a consumer of our API should be a
     - The API should return the To-Do Tasks list, showing Tasks `ID`, `Title`, `Description`, `Status`, `Priority`, `Due Date`, and `Creation date`.
     - If the specified parent list `ID` does not exist, or if the To-Do list is in a 'Deleted' status, the API should return a `404 Not Found` error.
 
+### Story 10: Update a Task
 
-[In progress]
-### Story X: Update a Task
-
-- **As a user, I want to update an existing task (e.g., change its title or mark it as complete), so that I can keep my task list current.**
+- **As a user, I want to update a Task, so that it can be up to date.**
 - **Acceptance Criteria:**
-    - The user must provide the unique ID of the task to update.
-    - The user can update the task's `title` and/or its `is_completed` status.
-    - If the task is found and updated, the API should return the updated task data.
-    - If no task with that ID exists, the API should return a "Not Found" error.
+    - The API call must specify the unique `ID` of the parent To-Do list and the unique `ID` of the task to be updated.
+    - The API call must include a request body containing the fields to be updated. The updatable fields are `Title`, `Description`, `Status`, `Priority`, and `Due Date`.
+    - Upon a successful update, the API should return the complete and updated Task details.
+    - If a Task with the given ID exists and is not in a 'Deleted' or 'Deferred' status, the API should update it with the provided data.
+    - If the request body attempts to set the `status` to 'New', the API should return a `400 Bad Request` error, as this status is only set on creation.
+    - If a Task is assigned to the To-Do list in 'Deleted' or ' Deferred' status, or the task status is 'Deferred', the API should return a '409 Conflict' error.
+    - If no Task or To-Do list exists with the given ID, or if the Task is in a 'Deleted' status, the API should return a '404 Not Found' error.
 
----
 
-### Story X: Defer a Task
+### Story 11: Defer a Task
 
-- **As a user, I want to delete a task, so that I can remove completed or unnecessary items from my list.**
+- **As a user, I want to defer a Task, so that it is set as obsolete**
 - **Acceptance Criteria:**
-    - The user must provide the unique ID of the task to delete.
-    - If the task is successfully deleted, the API should return a success confirmation.
-    - If no task with that ID exists, the API should return a "Not Found" error.
+    - The API call must specify the unique `ID` of the parent To-Do list and the distinctive `ID` of the task to be deferred.
+    - A success will change the task's status to 'Deferred'.
+     - If the specified parent list `ID` or task `ID` does not exist, or if the task is in a 'Deleted' status, the API should return a `404 Not Found` error.
+    - If the parent list is in a 'Deleted' or 'Deferred' status, the API should return a `409 Conflict` error, as its tasks cannot be modified.
+    - Upon a successful deferral (including when the Task was already in a 'Deferred' state), the API should return a '204 No Content' status.
 
-### Story X: Delete a Task
+### Story 12: Delete a Task
 
-- **As a user, I want to delete a task, so that I can remove completed or unnecessary items from my list.**
+- **As a user, I want to delete a Task, so that it can be removed from the To-Do list.**
 - **Acceptance Criteria:**
-    - The user must provide the unique ID of the task to delete.
-    - If the task is successfully deleted, the API should return a success confirmation.
-    - If no task with that ID exists, the API should return a "Not Found" error.
+    -  The API call must specify the unique `ID` of the parent To-Do list and the distinctive `ID` of the task to be deleted.
+    - A success will change the task's status to 'Deleted'.
+    - If the specified parent list `ID` or task `ID` does not exist, the API should return a `404 Not Found` error.
+    - Upon a successful deletion (including when the Task was already in a 'Deleted' state), the API should return a '204 No Content' success status.
