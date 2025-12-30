@@ -18,9 +18,10 @@ This is the single source of truth for all data entities in the system.
 | Field | Type | Constraints |
 | :--- | :--- | :--- |
 | `id` | String | UUID, Read-only, System-generated |
+| `user_id` | String | UUID, Required, Link to User (Owner) |
 | `title` | String | Required, Writable on create/update |
 | `description` | String | Optional, Writable on create/update |
-| `status` | String | Enum ('New', 'Deferred', 'Deleted'), Writable via specific actions |
+| `status` | String | Enum ('Active', 'Deferred', 'Deleted'), Default: 'Active' |
 | `created_at` | Timestamp | Read-only, System-generated |
 | `updated_at` | Timestamp | Read-only, System-generated |
 
@@ -80,7 +81,7 @@ This section provides a consolidated overview of critical business rules. For de
 *   **Acceptance Criteria:**
     *   The request body must contain a `title`.
     *   The request body may optionally contain a `description`.
-    *   A new list will have its `status` set to 'New' by default.
+    *   A new list will have its `status` set to 'Active' by default.
     *   Upon successful creation, the API should return a `201 Created` status with the complete data for the new list.
 
 #### Story 2: View All To-Do lists
