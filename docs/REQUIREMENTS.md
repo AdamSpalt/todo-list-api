@@ -38,6 +38,17 @@ This is the single source of truth for all data entities in the system.
 | `created_at` | Timestamp | Read-only, System-generated |
 | `updated_at` | Timestamp | Read-only, System-generated |
 
+### 2.3. Entity Relationships
+
+The system is built upon the following structural relationships:
+
+*   **List to Task (One-to-Many):**
+    *   **Cardinality:** One `List` can contain zero, one, or many `Tasks`.
+    *   **Optionality:** A `List` can exist without any `Tasks` (e.g., a newly created list).
+*   **Task to List (Many-to-One):**
+    *   **Cardinality:** A `Task` must belong to exactly one `List`.
+    *   **Optionality:** Mandatory. A `Task` cannot exist as an orphan; it requires a valid parent `List`.
+
 ## 3. Key Business Rules Summary
 
 This section provides a consolidated overview of critical business rules. For detailed context, refer to the Acceptance Criteria of the referenced User Story.
