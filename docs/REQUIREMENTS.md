@@ -15,29 +15,29 @@ This is the single source of truth for all data entities in the system.
 
 ### 2.1. List Entity
 
-| Field | Type | Constraints |
-| :--- | :--- | :--- |
-| `id` | String | UUID, Read-only, System-generated |
-| `user_id` | String | UUID, Required, Link to User (Owner) |
-| `title` | String | Required, Writable on create/update |
-| `description` | String | Optional, Writable on create/update |
-| `status` | String | Enum ('Active', 'Deferred', 'Deleted'), Default: 'Active' |
-| `created_at` | Timestamp | Read-only, System-generated |
-| `updated_at` | Timestamp | Read-only, System-generated |
+| Field | Type | Required? | Notes / Rules |
+| :--- | :--- | :--- | :--- |
+| `id` | String | No | UUID, Read-only, System-generated |
+| `user_id` | String | **Yes** | UUID, Link to User (Owner) |
+| `title` | String | **Yes** | Writable on create/update |
+| `description` | String | No | Writable on create/update |
+| `status` | String | No | Enum ('Active', 'Deferred', 'Deleted'), Default: 'Active' |
+| `created_at` | Timestamp | No | Read-only, System-generated |
+| `updated_at` | Timestamp | No | Read-only, System-generated |
 
 ### 2.2. Task Entity
 
-| Field | Type | Constraints |
-| :--- | :--- | :--- |
-| `id` | String | UUID, Read-only, System-generated |
-| `list_id` | String | UUID, Foreign Key to List, Required on create |
-| `title` | String | Required, Writable on create/update |
-| `description` | String | Optional, Writable on create/update |
-| `status` | String | Enum ('New', 'In-Progress', 'Completed', 'Deferred', 'Deleted') |
-| `priority` | String | Enum ('Low', 'Medium', 'High'), Optional |
-| `due_date` | Date | Optional, Writable on create/update |
-| `created_at` | Timestamp | Read-only, System-generated |
-| `updated_at` | Timestamp | Read-only, System-generated |
+| Field | Type | Required? | Notes / Rules |
+| :--- | :--- | :--- | :--- |
+| `id` | String | No | UUID, Read-only, System-generated |
+| `list_id` | String | **Yes** | UUID, Foreign Key to List |
+| `title` | String | **Yes** | Writable on create/update |
+| `description` | String | No | Writable on create/update |
+| `status` | String | No | Enum ('New', 'In-Progress', 'Completed', 'Deferred', 'Deleted'), Default: 'New' |
+| `priority` | String | No | Enum ('Low', 'Medium', 'High') |
+| `due_date` | Date | No | Writable on create/update |
+| `created_at` | Timestamp | No | Read-only, System-generated |
+| `updated_at` | Timestamp | No | Read-only, System-generated |
 
 ### 2.3. Entity Relationships
 
