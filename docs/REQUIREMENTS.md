@@ -13,6 +13,10 @@ The primary goal of this project is to provide a simple, reliable, and programma
 
 This is the single source of truth for all data entities in the system.
 
+**Note on 'Required?':** This column indicates whether the field is **mandatory in the API request body** when creating a new entity.
+*   **Yes:** The client *must* send this field.
+*   **No:** The field is optional (has a default value) or is system-generated (like `id` or timestamps).
+
 ### 2.1. List Entity
 
 | Field | Type | Required? | Notes / Rules |
