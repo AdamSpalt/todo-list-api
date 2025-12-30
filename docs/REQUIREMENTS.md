@@ -169,3 +169,32 @@ This section provides a consolidated overview of critical business rules. For de
     *   Upon success, the task's `status` is changed to 'Deleted'.
     *   If the parent list or task `ID` does not exist, the API should return a `404 Not Found` error.
     *   Upon a successful deletion (including when the task was already 'Deleted'), the API should return a `204 No Content` status.
+
+## 5. Non-Functional Requirements (NFRs)
+
+These requirements define the system's behavioral attributes, ensuring security, reliability, and maintainability.
+
+### 5.1. Security (Authentication & Authorization)
+*   **Authentication:** All API endpoints (excluding health checks) must require authentication. The client must send a valid Bearer Token in the `Authorization` HTTP header.
+*   **Authorization:** The system must enforce resource ownership. Users can only view, modify, or delete Lists and Tasks that belong to them. Accessing another user's resources must result in a `403 Forbidden` error.
+
+### 5.2. Pagination
+*   **Scope:** All "Get All" endpoints (e.g., `GET /lists`, `GET /lists/{id}/tasks`) must support pagination to prevent performance degradation.
+*   **Parameters:** The API should accept `limit` (number of items to return) and `offset` (number of items to skip) query parameters.
+*   **Defaults:** If parameters are not provided, the API defaults to `limit=20` and `offset=0`.
+*   **Maximum:** The API must enforce a maximum `limit` of 100 items per request.
+
+### 5.3. Error Handling
+*   **Format:** All error responses must return a consistent JSON structure containing:
+    *   `error_code`: A specific internal code for the error type.
+    *   `message`: A human-readable description of the error.
+    *   `details`: (Optional) Additional context or validation errors.
+*   **Status Codes:** The API must use standard HTTP status codes (e.g., `400` for validation errors, `401` for missing auth, `403` for permission issues, `404` for missing resources, `429` for rate limiting, `500` for server errors).
+
+### 5.4. API Versioning
+*   **Strategy:** The API must use URI Versioning to ensure backward compatibility for future changes.
+*   **Structure:** All endpoint paths must be prefixed with the version number (e.g., `/v1/lists`).
+
+### 5.5. Rate Limiting
+*   **Limit:** To protect system stability, the API will enforce a rate limit of **100 requests per minute** per authenticated user (or per IP address for unauthenticated endpoints).
+*   **Behavior:** Requests exceeding this limit will be rejected with a `429 Too Many Requests` status code and a `Retry-After` header indicating when the client can try again.
