@@ -118,7 +118,7 @@ This section provides a consolidated overview of critical business rules. For de
     *   Upon success, the list's `status` is changed to 'Deferred'.
     *   If the list contains any tasks with a status of 'In-Progress', the API should return a `409 Conflict` error.
     *   If no list exists with the given `ID`, or if the list is in a 'Deleted' status, the API should return a `404 Not Found` error.
-    *   Upon a successful deferral (including when the list was already 'Deferred'), the API should return a `204 No Content` status.
+    *   Upon a successful deferral (including when the list was already 'Deferred'), the API should return a `200 OK` status.
 
 #### Story 6: Delete a To-Do list
 *   **As a user, I want to delete a To-Do list, so that it can be removed.**
@@ -176,7 +176,7 @@ This section provides a consolidated overview of critical business rules. For de
     *   Upon success, the task's `status` is changed to 'Deferred'.
     *   If the parent list or task `ID` does not exist, or if the task is in a 'Deleted' status, the API should return a `404 Not Found` error.
     *   If the parent list is in a 'Deleted' or 'Deferred' status, the API should return a `409 Conflict` error.
-    *   Upon a successful deferral (including when the task was already 'Deferred'), the API should return a `204 No Content` status.
+    *   Upon a successful deferral (including when the task was already 'Deferred'), the API should return a `200 OK` status.
 
 #### Story 12: Delete a Task
 *   **As a user, I want to delete a Task, so that it can be removed from the To-Do list.**
