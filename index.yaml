@@ -1,0 +1,533 @@
+openapi: 3.0.3
+info:
+  title: To-Do List API
+  description: |
+    A simple API for managing personal task lists. 
+    This API allows users to create lists, add tasks, and manage their status.
+
+    **Documentation & References:**
+    - [Project Requirements](https://github.com/AdamSpalt/todo-list-api/blob/main/docs/REQUIREMENTS.md)
+    
+    **Key Features:**
+    - Create, Read, Update, Delete (CRUD) Lists
+    - Manage Tasks within Lists
+    - Filter by Status
+  version: 1.0.0
+  contact:
+    name: Adam Spaltenstein
+    email: adam.spaltenstein@gmail.com
+
+servers:
+  - url: http://localhost:8000/v1
+    description: Local Development Server
+
+# -------------------------
+# GLOBAL SECURITY
+# -------------------------
+security:
+  - bearerAuth: []
+
+# -------------------------
+# PATHS [ENDPOINTS]
+# -------------------------
+paths:
+  # -------------------------
+  # Collection Level: /lists
+  # -------------------------
+  /lists:
+    get:
+      summary: Retrieve all active To-Do lists (User Story 2)
+      description: |
+        Returns a list of all lists that are not in 'Deleted' status.
+        If no lists exist, returns an empty list.
+      tags:
+        - Lists
+      parameters:
+        - name: page
+          in: query
+          description: Page number for pagination
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          description: Number of items per page
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: A list of To-Do lists (or empty list)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ToDoList'
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      summary: Create a new To-Do list (User Story 1)
+      description: |
+        Creates a new list.
+        *   **Default Status:** 'Active'
+        *   **Required:** Title
+      tags:
+        - Lists
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ToDoList'
+      responses:
+        '201':
+          description: List created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ToDoList'
+        '400':
+          description: Invalid input (Missing Title)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # -------------------------
+  # Item Level: /lists/{id}
+  # -------------------------
+  /lists/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: The UUID of the list
+        schema:
+          type: string
+          format: uuid
+
+    get:
+      summary: View a specific To-Do list (User Story 3)
+      description: |
+        Returns full details of a specific list.
+        **Rule:** Returns 404 if list does not exist OR is 'Deleted'.
+      tags:
+        - Lists
+      responses:
+        '200':
+          description: List details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ToDoList'
+        '404':
+          description: List not found or is Deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    patch:
+      summary: Update or Defer a To-Do list (User Story 4 & 5)
+      description: |
+        Updates list details (Title, Description) or Status.
+        
+        **Deferral Logic (Story 5):**
+        *   If updating `status` to 'Deferred', the system checks for 'In-Progress' tasks.
+        *   If 'In-Progress' tasks exist, returns **409 Conflict**.
+      tags:
+        - Lists
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ToDoList'
+      responses:
+        '200':
+          description: List updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ToDoList'
+        '404':
+          description: List not found or is Deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflict - Cannot defer list with 'In-Progress' tasks
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      summary: Soft-delete a To-Do list (User Story 6)
+      description: |
+        Changes status to 'Deleted'.
+        
+        **Validation Rule:**
+        *   Cannot delete if tasks are NOT 'Completed' or 'Deferred'.
+        *   Returns **409 Conflict** if active tasks exist.
+        *   Returns **204** if successful (Idempotent).
+      tags:
+        - Lists
+      responses:
+        '204':
+          description: List deleted successfully (No Content)
+        '404':
+          description: List not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflict - Cannot delete list with active tasks
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # -------------------------
+  # Sub-Collection: Tasks
+  # -------------------------
+  /lists/{list_id}/tasks:
+    parameters:
+      - name: list_id
+        in: path
+        required: true
+        description: The UUID of the parent list
+        schema:
+          type: string
+          format: uuid
+
+    get:
+      summary: View all tasks in a list (User Story 9)
+      description: |
+        Returns a list of all tasks in the specified list.
+        **Rule:** Excludes tasks with status 'Deleted'.
+        **Rule:** Returns 404 if the Parent List does not exist or is 'Deleted'.
+      tags:
+        - Tasks
+      parameters:
+        - name: page
+          in: query
+          description: Page number for pagination
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          description: Number of items per page
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: A list of tasks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+        '404':
+          description: Parent List not found or is Deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      summary: Create a new Task (User Story 7)
+      description: |
+        Adds a new task to the list.
+        *   **Default Status:** 'New'
+        *   **Required:** Title
+        
+        **Validation Rules:**
+        *   Returns **409 Conflict** if Parent List is 'Deleted' or 'Deferred'.
+        *   Returns **400** if Title is missing.
+      tags:
+        - Tasks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task'
+      responses:
+        '201':
+          description: Task created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          description: Invalid input (Missing Title)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Parent List not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflict - Parent List is Deleted or Deferred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # -------------------------
+  # Item Level: Specific Task
+  # -------------------------
+  /lists/{list_id}/tasks/{task_id}:
+    parameters:
+      - name: list_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: task_id
+        in: path
+        required: true
+        description: The UUID of the task
+        schema:
+          type: string
+          format: uuid
+
+    get:
+      summary: View a single Task (User Story 8)
+      description: |
+        Returns details of a specific task.
+        **Rule:** Returns 404 if Task OR Parent List is 'Deleted'.
+      tags:
+        - Tasks
+      responses:
+        '200':
+          description: Task details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '404':
+          description: Task or Parent List not found/deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    patch:
+      summary: Update or Defer a Task (User Story 10 & 11)
+      description: |
+        Updates task details or status.
+        
+        **Validation Rules:**
+        *   **Story 10:** Cannot set status to 'New' -> Returns **400**.
+        *   **Story 10/11:** Cannot update if Parent List is 'Deleted' or 'Deferred' -> Returns **409**.
+        *   **Story 10:** Cannot update if Task is 'Deferred' -> Returns **404** (Hidden).
+      tags:
+        - Tasks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task'
+      responses:
+        '200':
+          description: Task updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          description: Invalid status transition (e.g., back to New)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Task/List not found or is Deleted/Deferred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflict - Parent List is locked (Deferred/Deleted)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      summary: Soft-delete a Task (User Story 12)
+      description: |
+        Changes task status to 'Deleted'.
+        Returns **204** if successful.
+      tags:
+        - Tasks
+      responses:
+        '204':
+          description: Task deleted successfully (No Content)
+        '404':
+          description: Task or Parent List not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+# -------------------------
+# COMPONENTS [API SCHEMAS]
+# -------------------------
+components:
+  schemas:
+    # -------------------------
+    # The "List" Entity
+    # -------------------------
+    ToDoList:
+      type: object
+      required:
+        - title
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier (Auto-generated)
+          readOnly: true
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        title:
+          type: string
+          description: The name of the To-Do list
+          example: "Groceries"
+        description:
+          type: string
+          description: Optional details about the list
+          example: "Things to buy for the week"
+        status:
+          type: string
+          description: |
+            The lifecycle state of the list.
+            * `Active` - The list is in use.
+            * `Deferred` - The list is paused (Read-Only).
+            * `Deleted` - The list is soft-deleted (Hidden).
+          enum:
+            - Active
+            - Deferred
+            - Deleted
+          default: Active
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Timestamp when the list was created
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Timestamp when the list was last modified
+
+    # -------------------------
+    # The "Task" Entity
+    # -------------------------
+    Task:
+      type: object
+      required:
+        - title
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier (Auto-generated)
+          readOnly: true
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        list_id:
+          type: string
+          format: uuid
+          description: The ID of the list this task belongs to (Foreign Key)
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        title:
+          type: string
+          description: The task action item
+          example: "Buy Milk"
+        description:
+          type: string
+          description: Detailed notes about the task
+          nullable: true
+          example: "2% fat milk, 1 gallon"
+        status:
+          type: string
+          description: Current state of the task
+          enum:
+            - New
+            - In-Progress
+            - Completed
+            - Deferred
+            - Deleted
+          default: New
+        priority:
+          type: string
+          description: Urgency level of the task
+          enum:
+            - Low
+            - Medium
+            - High
+          example: Medium
+        due_date:
+          type: string
+          format: date
+          description: The deadline for the task (YYYY-MM-DD)
+          example: "2023-12-31"
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Timestamp when the task was created
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Timestamp when the task was last modified
+
+    # -------------------------
+    # Standard Error Response
+    # -------------------------
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 404
+        message:
+          type: string
+          example: "List not found"
+        details:
+          type: array
+          items:
+            type: object
+          nullable: true
+
+  # -------------------------
+  # Security [Bearer Token]
+  # -------------------------
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        Supabase Auth Token.
+        Enter your JWT token in the format: `Bearer <token>`
