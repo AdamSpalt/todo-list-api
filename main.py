@@ -2,12 +2,16 @@ from fastapi import FastAPI, HTTPException, Depends, Query, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
-from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
+from sqlmodel import SQLModel, Field, Session, select, col
 from typing import Optional, List
 from uuid import UUID, uuid4
 from datetime import date, datetime
 from enum import Enum
 import time
+import jwt
+import os
+from database import get_session, create_db_and_tables
 
 # -------------------------------------------
 # DATA MODELS (The "Cookie Cutters")
@@ -33,35 +37,35 @@ class TaskPriority(str, Enum):
 
 # Schemas: Defining the shape of our data objects
 
-class ToDoList(BaseModel):
+class ToDoList(SQLModel, table=True):
     # System fields (readOnly in YAML) are Optional here so we don't have to send them when creating
-    id: Optional[UUID] = None
-    user_id: Optional[str] = None
+    id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
+    user_id: Optional[str] = Field(default=None, index=True)
     title: str
     description: Optional[str] = None
-    status: ListStatus = ListStatus.ACTIVE
-    created_at: Optional[datetime] = None
-    updated_at: Optional[datetime] = None
+    status: ListStatus = Field(default=ListStatus.ACTIVE)
+    created_at: Optional[datetime] = Field(default_factory=datetime.now)
+    updated_at: Optional[datetime] = Field(default_factory=datetime.now)
 
     class Config:
         # This tells Pydantic to treat Enums as strings
         use_enum_values = True
 
-class Task(BaseModel):
-    id: Optional[UUID] = None
-    list_id: Optional[UUID] = None
+class Task(SQLModel, table=True):
+    id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
+    list_id: Optional[UUID] = Field(default=None, foreign_key="todolist.id", index=True)
     title: str
     description: Optional[str] = None
-    status: TaskStatus = TaskStatus.NEW
+    status: TaskStatus = Field(default=TaskStatus.NEW)
     priority: Optional[TaskPriority] = None
     due_date: Optional[date] = None
-    created_at: Optional[datetime] = None
-    updated_at: Optional[datetime] = None
+    created_at: Optional[datetime] = Field(default_factory=datetime.now)
+    updated_at: Optional[datetime] = Field(default_factory=datetime.now)
 
     class Config:
         use_enum_values = True
 
-class Error(BaseModel):
+class Error(SQLModel):
     code: int
     message: str
     details: Optional[List] = None
@@ -74,9 +78,35 @@ app = FastAPI(
     version="1.0.0"
 )
 
+# CORS Configuration (Allows the world to talk to your API)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # In production, change this to your frontend URL
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 @app.get("/")
 def read_root():
     return {"message": "Hello World", "status": "System is Online"}
+
+@app.on_event("startup")
+def on_startup():
+    """Create database tables on startup."""
+    try:
+        create_db_and_tables()
+    except Exception as e:
+        print("\n\n" + "="*60)
+        print("❌ DATABASE CONNECTION FAILED")
+        print("="*60)
+        print(f"Error Details: {e}")
+        print("\n💡 COMMON FIXES:")
+        print("1. Check Supabase Dashboard: Is your project PAUSED?")
+        print("2. Check .env: Is the DATABASE_URL correct?")
+        print("3. Check Network: Are you on a VPN blocking the connection?")
+        print("="*60 + "\n")
+        raise e
 
 # -------------------------------------------
 # EXCEPTION HANDLERS
@@ -131,12 +161,6 @@ async def rate_limit_middleware(request: Request, call_next):
     return response
 
 # -------------------------------------------
-# FAKE DATABASE
-# -------------------------------------------
-db_lists = []
-db_tasks = []
-
-# -------------------------------------------
 # DEPENDENCIES (Reusable Logic)
 # -------------------------------------------
 
@@ -146,18 +170,20 @@ security = HTTPBearer()
 def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
     """Extracts the Bearer Token and treats it as the User ID."""
     token = credentials.credentials
-    if not token:
-        raise HTTPException(status_code=401, detail="Invalid authentication credentials")
-    return token
+    secret = os.getenv("SUPABASE_JWT_SECRET")
+    
+    try:
+        # Decode and verify the JWT signature using Supabase's secret
+        # options={"verify_aud": False} allows us to skip audience check for simplicity
+        payload = jwt.decode(token, secret, algorithms=["HS256"], options={"verify_aud": False})
+        return payload.get("sub") # 'sub' is the User ID in Supabase
+    except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
 
-def get_valid_list(list_id: UUID, user_id: str = Depends(get_current_user)) -> ToDoList:
+def get_valid_list(list_id: UUID, user_id: str = Depends(get_current_user), session: Session = Depends(get_session)) -> ToDoList:
     """Dependency to find and validate a parent list."""
-    parent_list = None
-    for l in db_lists:
-        if l.id == list_id:
-            parent_list = l
-            break
-            
+    parent_list = session.get(ToDoList, list_id)
+
     if not parent_list or parent_list.status == ListStatus.DELETED:
         raise HTTPException(status_code=404, detail="Parent List not found")
     
@@ -171,15 +197,14 @@ def get_valid_list(list_id: UUID, user_id: str = Depends(get_current_user)) -> T
 # ENDPOINTS
 # -------------------------------------------
 @app.post("/v1/lists", response_model=ToDoList, status_code=201, tags=["Lists"])
-def create_list(todo_list: ToDoList, user_id: str = Depends(get_current_user)):
-    # 1. Generate system fields
-    todo_list.id = uuid4()
+def create_list(todo_list: ToDoList, user_id: str = Depends(get_current_user), session: Session = Depends(get_session)):
+    # 1. Set system fields
     todo_list.user_id = user_id
-    todo_list.created_at = datetime.now()
-    todo_list.updated_at = datetime.now()
     
-    # 2. Save to "Database"
-    db_lists.append(todo_list)
+    # 2. Save to Database
+    session.add(todo_list)
+    session.commit()
+    session.refresh(todo_list)
     
     return todo_list
 
@@ -187,88 +212,102 @@ def create_list(todo_list: ToDoList, user_id: str = Depends(get_current_user)):
 def get_lists(
     page: int = Query(1, ge=1, description="Page number"),
     limit: int = Query(10, ge=1, le=100, description="Items per page"),
-    user_id: str = Depends(get_current_user)
+    user_id: str = Depends(get_current_user),
+    session: Session = Depends(get_session)
 ):
-    # Return all lists that are NOT marked as 'Deleted'
-    active_lists = [l for l in db_lists if l.status != ListStatus.DELETED and l.user_id == user_id]
+    # Query: Select * From ToDoList Where user_id = X AND status != Deleted
+    query = select(ToDoList).where(
+        ToDoList.user_id == user_id, 
+        ToDoList.status != ListStatus.DELETED
+    )
     start = (page - 1) * limit
-    return active_lists[start : start + limit]
+    results = session.exec(query.offset(start).limit(limit)).all()
+    return results
 
 @app.get("/v1/lists/{id}", response_model=ToDoList, tags=["Lists"])
-def get_list(id: UUID, user_id: str = Depends(get_current_user)):
-    # Find the list with the matching ID
-    for l in db_lists:
-        if l.id == id and l.status != ListStatus.DELETED:
-            if l.user_id != user_id:
-                raise HTTPException(status_code=403, detail="Not authorized to access this resource")
-            return l
+def get_list(id: UUID, user_id: str = Depends(get_current_user), session: Session = Depends(get_session)):
+    # We use get_valid_list logic here manually or just query directly
+    todo_list = session.get(ToDoList, id)
     
-    # If we finish the loop and find nothing, throw a 404 error
-    raise HTTPException(status_code=404, detail="List not found")
+    if not todo_list or todo_list.status == ListStatus.DELETED:
+        raise HTTPException(status_code=404, detail="List not found")
+        
+    if todo_list.user_id != user_id:
+        raise HTTPException(status_code=403, detail="Not authorized to access this resource")
+        
+    return todo_list
 
 @app.patch("/v1/lists/{id}", response_model=ToDoList, tags=["Lists"])
-def update_list(id: UUID, list_update: ToDoList, user_id: str = Depends(get_current_user)):
-    for l in db_lists:
-        if l.id == id and l.status != ListStatus.DELETED:
-            if l.user_id != user_id:
-                raise HTTPException(status_code=403, detail="Not authorized to access this resource")
+def update_list(id: UUID, list_update: ToDoList, user_id: str = Depends(get_current_user), session: Session = Depends(get_session)):
+    # 1. Fetch existing list
+    db_list = session.get(ToDoList, id)
+    if not db_list or db_list.status == ListStatus.DELETED:
+        raise HTTPException(status_code=404, detail="List not found")
+    
+    if db_list.user_id != user_id:
+        raise HTTPException(status_code=403, detail="Not authorized to access this resource")
 
-            # Business Rule: Cannot defer a list with In-Progress tasks.
-            if list_update.status == ListStatus.DEFERRED:
-                for task in db_tasks:
-                    if task.list_id == id and task.status == TaskStatus.IN_PROGRESS:
-                        raise HTTPException(
-                            status_code=409, 
-                            detail="Cannot defer list with 'In-Progress' tasks"
-                        )
+    # 2. Business Rule: Cannot defer a list with In-Progress tasks.
+    if list_update.status == ListStatus.DEFERRED:
+        # Query: Select * From Task Where list_id = X AND status = 'In-Progress'
+        active_task = session.exec(select(Task).where(
+            Task.list_id == id, 
+            Task.status == TaskStatus.IN_PROGRESS
+        )).first()
+        
+        if active_task:
+            raise HTTPException(status_code=409, detail="Cannot defer list with 'In-Progress' tasks")
 
-            l.title = list_update.title
-            l.description = list_update.description
-            l.status = list_update.status
-            l.updated_at = datetime.now()
-            return l
-            
-    raise HTTPException(status_code=404, detail="List not found")
+    # 3. Update fields
+    db_list.title = list_update.title
+    db_list.description = list_update.description
+    db_list.status = list_update.status
+    db_list.updated_at = datetime.now()
+    
+    session.add(db_list)
+    session.commit()
+    session.refresh(db_list)
+    return db_list
 
 @app.delete("/v1/lists/{id}", status_code=204, tags=["Lists"])
-def delete_list(id: UUID, user_id: str = Depends(get_current_user)):
-    for l in db_lists:
-        if l.id == id:
-            if l.user_id != user_id:
-                raise HTTPException(status_code=403, detail="Not authorized to access this resource")
+def delete_list(id: UUID, user_id: str = Depends(get_current_user), session: Session = Depends(get_session)):
+    db_list = session.get(ToDoList, id)
+    if not db_list:
+        raise HTTPException(status_code=404, detail="List not found")
+        
+    if db_list.user_id != user_id:
+        raise HTTPException(status_code=403, detail="Not authorized to access this resource")
 
-            # If the list is found, we will return success (idempotency).
-            # Only update it if it's not already deleted.
-            if l.status != ListStatus.DELETED:
-                # Business Rule: Cannot delete list with active tasks.
-                for t in db_tasks:
-                    if t.list_id == id and t.status in [TaskStatus.NEW, TaskStatus.IN_PROGRESS]:
-                        raise HTTPException(
-                            status_code=409, 
-                            detail="Cannot delete list with active tasks"
-                        )
+    if db_list.status != ListStatus.DELETED:
+        # Business Rule: Cannot delete list with active tasks.
+        active_task = session.exec(select(Task).where(
+            Task.list_id == id,
+            col(Task.status).in_([TaskStatus.NEW, TaskStatus.IN_PROGRESS])
+        )).first()
+        
+        if active_task:
+            raise HTTPException(status_code=409, detail="Cannot delete list with active tasks")
 
-                l.status = ListStatus.DELETED
-                l.updated_at = datetime.now()
-            return
-            
-    raise HTTPException(status_code=404, detail="List not found")
+        db_list.status = ListStatus.DELETED
+        db_list.updated_at = datetime.now()
+        session.add(db_list)
+        session.commit()
+    
+    return
 
 @app.post("/v1/lists/{list_id}/tasks", response_model=Task, status_code=201, tags=["Tasks"])
-def create_task(task: Task, parent_list: ToDoList = Depends(get_valid_list)):
+def create_task(task: Task, parent_list: ToDoList = Depends(get_valid_list), session: Session = Depends(get_session)):
     # 1. Validate Parent List (Handled by dependency)
-    # If list is Deferred, we cannot add new tasks (Business Rule)
     if parent_list.status == ListStatus.DEFERRED:
         raise HTTPException(status_code=409, detail="Cannot add tasks to a Deferred list")
 
-    # 2. Generate system fields
-    task.id = uuid4()
+    # 2. Set system fields
     task.list_id = parent_list.id  # Link the task to the parent list
-    task.created_at = datetime.now()
-    task.updated_at = datetime.now()
     
-    # 3. Save to "Database"
-    db_tasks.append(task)
+    # 3. Save to Database
+    session.add(task)
+    session.commit()
+    session.refresh(task)
     
     return task
 
@@ -276,61 +315,65 @@ def create_task(task: Task, parent_list: ToDoList = Depends(get_valid_list)):
 def get_tasks(
     parent_list: ToDoList = Depends(get_valid_list),
     page: int = Query(1, ge=1, description="Page number"),
-    limit: int = Query(10, ge=1, le=100, description="Items per page")
+    limit: int = Query(10, ge=1, le=100, description="Items per page"),
+    session: Session = Depends(get_session)
 ):
-    # 1. Validate Parent List (Handled by dependency)
-    # 2. Return tasks for this list
-    list_tasks = [t for t in db_tasks if t.list_id == parent_list.id and t.status != TaskStatus.DELETED]
+    # Query: Select * From Task Where list_id = X AND status != Deleted
+    query = select(Task).where(
+        Task.list_id == parent_list.id,
+        Task.status != TaskStatus.DELETED
+    )
     start = (page - 1) * limit
-    return list_tasks[start : start + limit]
+    return session.exec(query.offset(start).limit(limit)).all()
 
 @app.get("/v1/lists/{list_id}/tasks/{task_id}", response_model=Task, tags=["Tasks"])
-def get_task(task_id: UUID, parent_list: ToDoList = Depends(get_valid_list)):
-    # 1. Validate Parent List (Handled by dependency)
-    # 2. Find the Task
-    for t in db_tasks:
-        if t.id == task_id and t.list_id == parent_list.id and t.status != TaskStatus.DELETED:
-            return t
-            
-    raise HTTPException(status_code=404, detail="Task not found")
+def get_task(task_id: UUID, parent_list: ToDoList = Depends(get_valid_list), session: Session = Depends(get_session)):
+    # Parent list is already validated by dependency
+    task = session.get(Task, task_id)
+    
+    if not task or task.list_id != parent_list.id or task.status == TaskStatus.DELETED:
+        raise HTTPException(status_code=404, detail="Task not found")
+        
+    return task
 
 @app.patch("/v1/lists/{list_id}/tasks/{task_id}", response_model=Task, tags=["Tasks"])
-def update_task(task_id: UUID, task_update: Task, parent_list: ToDoList = Depends(get_valid_list)):
+def update_task(task_id: UUID, task_update: Task, parent_list: ToDoList = Depends(get_valid_list), session: Session = Depends(get_session)):
     # 1. Validate Parent List (Handled by dependency)
     if parent_list.status == ListStatus.DEFERRED:
         raise HTTPException(status_code=409, detail="Cannot update tasks in a Deferred list")
 
     # 2. Find and Update Task
-    for t in db_tasks:
-        if t.id == task_id and t.list_id == parent_list.id:
-            if t.status == TaskStatus.DELETED:
-                break
-            
-            # Business Rule: Cannot revert task status to 'New'
-            if task_update.status == TaskStatus.NEW and t.status != TaskStatus.NEW:
-                raise HTTPException(status_code=400, detail="Cannot revert task status to 'New'")
-            
-            t.title = task_update.title
-            t.description = task_update.description
-            t.status = task_update.status
-            t.priority = task_update.priority
-            t.due_date = task_update.due_date
-            t.updated_at = datetime.now()
-            return t
-            
-    raise HTTPException(status_code=404, detail="Task not found")
+    task = session.get(Task, task_id)
+    if not task or task.list_id != parent_list.id or task.status == TaskStatus.DELETED:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    # Business Rule: Cannot revert task status to 'New'
+    if task_update.status == TaskStatus.NEW and task.status != TaskStatus.NEW:
+        raise HTTPException(status_code=400, detail="Cannot revert task status to 'New'")
+    
+    task.title = task_update.title
+    task.description = task_update.description
+    task.status = task_update.status
+    task.priority = task_update.priority
+    task.due_date = task_update.due_date
+    task.updated_at = datetime.now()
+    
+    session.add(task)
+    session.commit()
+    session.refresh(task)
+    return task
 
 @app.delete("/v1/lists/{list_id}/tasks/{task_id}", status_code=204, tags=["Tasks"])
-def delete_task(task_id: UUID, parent_list: ToDoList = Depends(get_valid_list)):
-    # 1. Validate Parent List (Handled by dependency)
-    # 2. Find and Soft-Delete Task
-    for t in db_tasks:
-        if t.id == task_id and t.list_id == parent_list.id:
-            # If the task is found, we will return success (idempotency).
-            # Only update it if it's not already deleted.
-            if t.status != TaskStatus.DELETED:
-                t.status = TaskStatus.DELETED
-                t.updated_at = datetime.now()
-            return
-            
-    raise HTTPException(status_code=404, detail="Task not found")
+def delete_task(task_id: UUID, parent_list: ToDoList = Depends(get_valid_list), session: Session = Depends(get_session)):
+    task = session.get(Task, task_id)
+    
+    if not task or task.list_id != parent_list.id:
+        raise HTTPException(status_code=404, detail="Task not found")
+        
+    if task.status != TaskStatus.DELETED:
+        task.status = TaskStatus.DELETED
+        task.updated_at = datetime.now()
+        session.add(task)
+        session.commit()
+    
+    return
