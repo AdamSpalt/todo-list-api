@@ -22,7 +22,7 @@ servers:
     description: Local Development Server
 
 # -------------------------
-# GLOBAL SECURITY
+# GLOBAL SECURITY RE
 # -------------------------
 security:
   - bearerAuth: []
