@@ -65,6 +65,11 @@ class Task(SQLModel, table=True):
     class Config:
         use_enum_values = True
 
+class Client(SQLModel, table=True):
+    client_id: str = Field(primary_key=True)
+    client_secret: str # In a real production app, this should be hashed!
+    name: str
+
 class Error(SQLModel):
     code: int
     message: str
@@ -72,6 +77,16 @@ class Error(SQLModel):
 
 # 1. Initialize the API
 # This creates the application instance.
+
+class TokenRequest(SQLModel):
+    client_id: str
+    client_secret: str
+
+class TokenResponse(SQLModel):
+    access_token: str
+    token_type: str
+    expires_in: int
+
 app = FastAPI(
     title="To-Do List API",
     description="A simple API for managing task lists",
@@ -196,6 +211,41 @@ def get_valid_list(list_id: UUID, user_id: str = Depends(get_current_user), sess
 # -------------------------------------------
 # ENDPOINTS
 # -------------------------------------------
+
+@app.post("/v1/auth/token", response_model=TokenResponse, tags=["Auth"])
+def login_for_access_token(request: TokenRequest, session: Session = Depends(get_session)):
+    """
+    Standard Client Credentials Flow.
+    Exchanges Client ID + Secret for a short-lived Access Token.
+    """
+    # 1. Find Client
+    client = session.get(Client, request.client_id)
+    if not client or client.client_secret != request.client_secret:
+        raise HTTPException(status_code=401, detail="Invalid client_id or client_secret")
+    
+    # 2. Generate Token
+    now = int(time.time())
+    expires_in = 3600 * 24 # 1 day validity
+    
+    payload = {
+        "sub": client.client_id,
+        "role": "authenticated",
+        "exp": now + expires_in
+    }
+    
+    secret = os.getenv("SUPABASE_JWT_SECRET")
+    token = jwt.encode(payload, secret, algorithm="HS256")
+    
+    return {"access_token": token, "token_type": "bearer", "expires_in": expires_in}
+
+@app.post("/v1/auth/clients", response_model=Client, tags=["Auth"])
+def register_client(client: Client, user_id: str = Depends(get_current_user), session: Session = Depends(get_session)):
+    """Register a new third-party client (Protected by your Master Token)."""
+    session.add(client)
+    session.commit()
+    session.refresh(client)
+    return client
+
 @app.post("/v1/lists", response_model=ToDoList, status_code=201, tags=["Lists"])
 def create_list(todo_list: ToDoList, user_id: str = Depends(get_current_user), session: Session = Depends(get_session)):
     # 1. Set system fields
