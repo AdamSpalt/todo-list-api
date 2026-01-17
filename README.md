@@ -8,7 +8,7 @@ A robust RESTful API for managing personal task lists and tasks, built with **Fa
 *   **Framework:** FastAPI
 *   **Server:** Uvicorn
 *   **Validation:** Pydantic
-*   **Database:** In-Memory (Mock) *[Moving to Supabase in Phase 5]*
+*   **Database:** PostgreSQL (Supabase)
 
 ## ✨ Features
 
