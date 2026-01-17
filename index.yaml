@@ -390,6 +390,56 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
+  # -------------------------
+  # Auth Routes
+  # -------------------------
+  /auth/token:
+    post:
+      summary: Get Access Token (Client Credentials)
+      description: Exchange Client ID and Secret for a Bearer Token.
+      tags:
+        - Auth
+      security: [] # Public endpoint (No token required to get a token)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/clients:
+    post:
+      summary: Register a new Client
+      description: Create a new API Client (Requires Admin Token).
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Client'
+      responses:
+        '200':
+          description: Client registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+
 # -------------------------
 # COMPONENTS [API SCHEMAS]
 # -------------------------
@@ -501,6 +551,48 @@ components:
           format: date-time
           readOnly: true
           description: Timestamp when the task was last modified
+
+    # -------------------------
+    # Auth Schemas
+    # -------------------------
+    Client:
+      type: object
+      required:
+        - client_id
+        - client_secret
+        - name
+      properties:
+        client_id:
+          type: string
+        client_secret:
+          type: string
+        name:
+          type: string
+
+    TokenRequest:
+      type: object
+      required:
+        - client_id
+        - client_secret
+      properties:
+        client_id:
+          type: string
+        client_secret:
+          type: string
+
+    TokenResponse:
+      type: object
+      required:
+        - access_token
+        - token_type
+        - expires_in
+      properties:
+        access_token:
+          type: string
+        token_type:
+          type: string
+        expires_in:
+          type: integer
 
     # -------------------------
     # Standard Error Response
