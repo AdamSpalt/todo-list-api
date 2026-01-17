@@ -88,9 +88,9 @@ class TokenResponse(SQLModel):
     expires_in: int
 
 app = FastAPI(
-    title="To-Do List API",
+    title="To-Do List API (Cloud)",
     description="A simple API for managing task lists",
-    version="1.0.0"
+    version="1.1.0"
 )
 
 # CORS Configuration (Allows the world to talk to your API)
