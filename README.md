@@ -20,7 +20,7 @@ A robust RESTful API for managing personal task lists and tasks, built with **Fa
 *   **Security & Performance:**
     *   **Rate Limiting:** Protects against spam.
     *   **Pagination:** Efficiently handles large datasets.
-    *   **Authentication:** Bearer Token structure (ready for JWT).
+    *   **Authentication:** JWT (Supabase) + Client Credentials Flow.
 *   **Documentation:** Fully documented with OpenAPI (Swagger UI).
 
 ## 🛠️ Installation & Setup
