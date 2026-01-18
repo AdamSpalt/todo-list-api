@@ -91,12 +91,8 @@ Use the Access Token to call API endpoints.
 ## 📖 API Documentation
 
 ### ☁️ Live Deployment
-*   **Swagger UI (Interactive):** https://todo-list-api.vercel.app/docs
-*   **ReDoc (Static):** https://todo-list-api.vercel.app/redoc
-
-### 🧪 Postman Collection
-
-[![Run in Postman](https://run.pstmn.io/button.svg)](https://raw.githubusercontent.com/AdamSpalt/todo-list-api/refs/heads/main/postman/collections/ToDo%20API%20-%20Public.json)
+*   **Swagger UI (Interactive):** https://todo-list-api-seven-psi.vercel.app/docs
+*   **ReDoc (Static):** https://todo-list-api-seven-psi.vercel.app/redoc
 
 ### 📄 Design & Specifications
 *   **API Contract (YAML):** `index.yaml` - The strict architectural blueprint.
