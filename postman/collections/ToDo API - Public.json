@@ -1,0 +1,2173 @@
+{
+	"info": {
+		"_postman_id": "e9df1431-9a87-47e7-9bb3-310c785511c6",
+		"name": "ToDo API - Public",
+		"description": "A simple API for managing personal task lists. \nThis API allows users to create lists, add tasks, and manage their status.\n\n**Documentation & References:**\n- [Project Requirements](https://github.com/AdamSpalt/todo-list-api/blob/main/docs/REQUIREMENTS.md)\n\n**Key Features:**\n- Create, Read, Update, Delete (CRUD) Lists\n- Manage Tasks within Lists\n- Filter by Status\n\n\nContact Support:\n Name: Adam Spaltenstein\n Email: adam.spaltenstein@gmail.com",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_uid": "40301166-e9df1431-9a87-47e7-9bb3-310c785511c6"
+	},
+	"item": [
+		{
+			"name": "lists",
+			"item": [
+				{
+					"name": "{id}",
+					"item": [
+						{
+							"name": "View a specific To-Do list (User Story 3)",
+							"id": "048f58d2-ee87-459f-860d-84e7430d4cdc",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/lists/:id",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"lists",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "aac0c082-f062-db1a-12c7-991834ea5f64",
+											"description": "(Required) The UUID of the list"
+										}
+									]
+								},
+								"description": "Returns full details of a specific list.\n**Rule:** Returns 404 if list does not exist OR is 'Deleted'.\n"
+							},
+							"response": [
+								{
+									"id": "7d867880-c5fc-4988-aa8f-881c7f40c5cd",
+									"name": "List details",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"description": "Added as a part of security scheme: bearer",
+												"key": "Authorization",
+												"value": "Bearer <token>"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/lists/:id",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"lists",
+												":id"
+											],
+											"variable": [
+												{
+													"key": "id"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json",
+											"uuid": "9a14dfe3-bf4f-4f7a-a292-b89cb4556406"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"title\": \"Groceries\",\n  \"id\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"description\": \"Things to buy for the week\",\n  \"status\": \"Active\",\n  \"created_at\": \"1947-05-21T08:15:23.260Z\",\n  \"updated_at\": \"2008-02-26T12:05:55.764Z\"\n}"
+								},
+								{
+									"id": "07844d43-7e58-4d15-b9fd-4d71c4897b60",
+									"name": "List not found or is Deleted",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"description": "Added as a part of security scheme: bearer",
+												"key": "Authorization",
+												"value": "Bearer <token>"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/lists/:id",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"lists",
+												":id"
+											],
+											"variable": [
+												{
+													"key": "id"
+												}
+											]
+										}
+									},
+									"status": "Not Found",
+									"code": 404,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json",
+											"uuid": "e2d613c2-624a-4ffd-a7ae-5c4c569093ca"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"code\": 404,\n  \"message\": \"List not found\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Update or Defer a To-Do list (User Story 4 & 5)",
+							"id": "614a8cbe-af92-4a70-aa4b-d53d2d4a520e",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"title\": \"Groceries\",\n  \"id\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"description\": \"Things to buy for the week\",\n  \"status\": \"Active\",\n  \"created_at\": \"1947-05-21T08:15:23.260Z\",\n  \"updated_at\": \"2008-02-26T12:05:55.764Z\"\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/lists/:id",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"lists",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "aac0c082-f062-db1a-12c7-991834ea5f64",
+											"description": "(Required) The UUID of the list"
+										}
+									]
+								},
+								"description": "Updates list details (Title, Description) or Status.\n\n**Deferral Logic (Story 5):**\n*   If updating `status` to 'Deferred', the system checks for 'In-Progress' tasks.\n*   If 'In-Progress' tasks exist, returns **409 Conflict**.\n"
+							},
+							"response": [
+								{
+									"id": "331eb6b1-92f8-463d-b103-be305825c0b6",
+									"name": "List updated successfully",
+									"originalRequest": {
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"description": "Added as a part of security scheme: bearer",
+												"key": "Authorization",
+												"value": "Bearer <token>"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"title\": \"Groceries\",\n  \"id\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"description\": \"Things to buy for the week\",\n  \"status\": \"Active\",\n  \"created_at\": \"1947-05-21T08:15:23.260Z\",\n  \"updated_at\": \"2008-02-26T12:05:55.764Z\"\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/lists/:id",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"lists",
+												":id"
+											],
+											"variable": [
+												{
+													"key": "id"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json",
+											"uuid": "33050bf7-870c-42c9-b5ca-7b57685a77a9"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"title\": \"Groceries\",\n  \"id\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"description\": \"Things to buy for the week\",\n  \"status\": \"Active\",\n  \"created_at\": \"1947-05-21T08:15:23.260Z\",\n  \"updated_at\": \"2008-02-26T12:05:55.764Z\"\n}"
+								},
+								{
+									"id": "f7b03f08-39ad-4b29-9537-689401c4e730",
+									"name": "List not found or is Deleted",
+									"originalRequest": {
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"description": "Added as a part of security scheme: bearer",
+												"key": "Authorization",
+												"value": "Bearer <token>"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"title\": \"Groceries\",\n  \"id\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"description\": \"Things to buy for the week\",\n  \"status\": \"Active\",\n  \"created_at\": \"1947-05-21T08:15:23.260Z\",\n  \"updated_at\": \"2008-02-26T12:05:55.764Z\"\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/lists/:id",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"lists",
+												":id"
+											],
+											"variable": [
+												{
+													"key": "id"
+												}
+											]
+										}
+									},
+									"status": "Not Found",
+									"code": 404,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json",
+											"uuid": "525eaf03-9afe-4103-9e64-b4145358e8fd"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"code\": 404,\n  \"message\": \"List not found\"\n}"
+								},
+								{
+									"id": "89cac709-948a-4dff-8fb7-9da42f97460c",
+									"name": "Conflict - Cannot defer list with 'In-Progress' tasks",
+									"originalRequest": {
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"description": "Added as a part of security scheme: bearer",
+												"key": "Authorization",
+												"value": "Bearer <token>"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"title\": \"Groceries\",\n  \"id\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"description\": \"Things to buy for the week\",\n  \"status\": \"Active\",\n  \"created_at\": \"1947-05-21T08:15:23.260Z\",\n  \"updated_at\": \"2008-02-26T12:05:55.764Z\"\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/lists/:id",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"lists",
+												":id"
+											],
+											"variable": [
+												{
+													"key": "id"
+												}
+											]
+										}
+									},
+									"status": "Conflict",
+									"code": 409,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json",
+											"uuid": "250fbaab-5e3e-4685-8b5f-cd2ee311730e"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"code\": 404,\n  \"message\": \"List not found\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Soft-delete a To-Do list (User Story 6)",
+							"id": "d414adc4-dc46-4430-91c6-031d1133c4c8",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/lists/:id",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"lists",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "aac0c082-f062-db1a-12c7-991834ea5f64",
+											"description": "(Required) The UUID of the list"
+										}
+									]
+								},
+								"description": "Changes status to 'Deleted'.\n\n**Validation Rule:**\n*   Cannot delete if tasks are NOT 'Completed' or 'Deferred'.\n*   Returns **409 Conflict** if active tasks exist.\n*   Returns **204** if successful (Idempotent).\n"
+							},
+							"response": [
+								{
+									"id": "9c850fdb-6a70-4a04-9797-65568f5f6112",
+									"name": "List deleted successfully (No Content)",
+									"originalRequest": {
+										"method": "DELETE",
+										"header": [
+											{
+												"description": "Added as a part of security scheme: bearer",
+												"key": "Authorization",
+												"value": "Bearer <token>"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/lists/:id",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"lists",
+												":id"
+											],
+											"variable": [
+												{
+													"key": "id"
+												}
+											]
+										}
+									},
+									"status": "No Content",
+									"code": 204,
+									"_postman_previewlanguage": "text",
+									"header": [],
+									"cookie": [],
+									"body": null
+								},
+								{
+									"id": "998ec2a0-c1ac-459a-a64d-003451c88639",
+									"name": "List not found",
+									"originalRequest": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"description": "Added as a part of security scheme: bearer",
+												"key": "Authorization",
+												"value": "Bearer <token>"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/lists/:id",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"lists",
+												":id"
+											],
+											"variable": [
+												{
+													"key": "id"
+												}
+											]
+										}
+									},
+									"status": "Not Found",
+									"code": 404,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json",
+											"uuid": "8c6f766a-2b69-4c5b-9fd9-1a6c68207411"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"code\": 404,\n  \"message\": \"List not found\"\n}"
+								},
+								{
+									"id": "bcbfd4e6-a872-4d69-825b-3cbaafe9bf2c",
+									"name": "Conflict - Cannot delete list with active tasks",
+									"originalRequest": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"description": "Added as a part of security scheme: bearer",
+												"key": "Authorization",
+												"value": "Bearer <token>"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/lists/:id",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"lists",
+												":id"
+											],
+											"variable": [
+												{
+													"key": "id"
+												}
+											]
+										}
+									},
+									"status": "Conflict",
+									"code": 409,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json",
+											"uuid": "9a81bbfd-c0dc-4b7a-84cf-ce1e8c860477"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"code\": 404,\n  \"message\": \"List not found\"\n}"
+								}
+							]
+						}
+					],
+					"id": "857d7fdc-3b79-4bc6-ba74-1f1fc9d423f6"
+				},
+				{
+					"name": "{list_id}",
+					"item": [
+						{
+							"name": "tasks",
+							"item": [
+								{
+									"name": "{task_id}",
+									"item": [
+										{
+											"name": "View a single Task (User Story 8)",
+											"id": "406eb30e-2ed8-4d64-b4d3-d83bdc1ea087",
+											"protocolProfileBehavior": {
+												"disableBodyPruning": true
+											},
+											"request": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/json"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/lists/:list_id/tasks/:task_id",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"lists",
+														":list_id",
+														"tasks",
+														":task_id"
+													],
+													"variable": [
+														{
+															"key": "list_id",
+															"value": "aac0c082-f062-db1a-12c7-991834ea5f64",
+															"description": "(Required) "
+														},
+														{
+															"key": "task_id",
+															"value": "aac0c082-f062-db1a-12c7-991834ea5f64",
+															"description": "(Required) The UUID of the task"
+														}
+													]
+												},
+												"description": "Returns details of a specific task.\n**Rule:** Returns 404 if Task OR Parent List is 'Deleted'.\n"
+											},
+											"response": [
+												{
+													"id": "327d0610-fe9e-4981-b65f-dbbf123da941",
+													"name": "Task details",
+													"originalRequest": {
+														"method": "GET",
+														"header": [
+															{
+																"key": "Accept",
+																"value": "application/json"
+															},
+															{
+																"description": "Added as a part of security scheme: bearer",
+																"key": "Authorization",
+																"value": "Bearer <token>"
+															}
+														],
+														"url": {
+															"raw": "{{baseUrl}}/lists/:list_id/tasks/:task_id",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"lists",
+																":list_id",
+																"tasks",
+																":task_id"
+															],
+															"variable": [
+																{
+																	"key": "list_id"
+																},
+																{
+																	"key": "task_id"
+																}
+															]
+														}
+													},
+													"status": "OK",
+													"code": 200,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json",
+															"uuid": "f8f479bb-11b9-4420-a4bf-eff483ffa65c"
+														}
+													],
+													"cookie": [],
+													"body": "{\n  \"title\": \"Buy Milk\",\n  \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"list_id\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"description\": \"2% fat milk, 1 gallon\",\n  \"status\": \"New\",\n  \"priority\": \"Medium\",\n  \"due_date\": \"2023-12-31\",\n  \"created_at\": \"1989-08-22T23:06:15.879Z\",\n  \"updated_at\": \"1989-06-23T04:49:18.084Z\"\n}"
+												},
+												{
+													"id": "c5f56b3d-cde0-4171-b249-a3ce34b2c34e",
+													"name": "Task or Parent List not found/deleted",
+													"originalRequest": {
+														"method": "GET",
+														"header": [
+															{
+																"key": "Accept",
+																"value": "application/json"
+															},
+															{
+																"description": "Added as a part of security scheme: bearer",
+																"key": "Authorization",
+																"value": "Bearer <token>"
+															}
+														],
+														"url": {
+															"raw": "{{baseUrl}}/lists/:list_id/tasks/:task_id",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"lists",
+																":list_id",
+																"tasks",
+																":task_id"
+															],
+															"variable": [
+																{
+																	"key": "list_id"
+																},
+																{
+																	"key": "task_id"
+																}
+															]
+														}
+													},
+													"status": "Not Found",
+													"code": 404,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json",
+															"uuid": "902d2223-6f83-40c3-b8ee-d09829b03f55"
+														}
+													],
+													"cookie": [],
+													"body": "{\n  \"code\": 404,\n  \"message\": \"List not found\"\n}"
+												}
+											]
+										},
+										{
+											"name": "Update or Defer a Task (User Story 10 & 11)",
+											"id": "cae32f3f-f59e-4bb9-9aa3-7477ff6c159e",
+											"protocolProfileBehavior": {
+												"disableBodyPruning": true
+											},
+											"request": {
+												"method": "PATCH",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													},
+													{
+														"key": "Accept",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"title\": \"Buy Milk\",\n  \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"list_id\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"description\": \"2% fat milk, 1 gallon\",\n  \"status\": \"New\",\n  \"priority\": \"Medium\",\n  \"due_date\": \"2023-12-31\",\n  \"created_at\": \"1989-08-22T23:06:15.879Z\",\n  \"updated_at\": \"1989-06-23T04:49:18.084Z\"\n}",
+													"options": {
+														"raw": {
+															"headerFamily": "json",
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/lists/:list_id/tasks/:task_id",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"lists",
+														":list_id",
+														"tasks",
+														":task_id"
+													],
+													"variable": [
+														{
+															"key": "list_id",
+															"value": "aac0c082-f062-db1a-12c7-991834ea5f64",
+															"description": "(Required) "
+														},
+														{
+															"key": "task_id",
+															"value": "aac0c082-f062-db1a-12c7-991834ea5f64",
+															"description": "(Required) The UUID of the task"
+														}
+													]
+												},
+												"description": "Updates task details or status.\n\n**Validation Rules:**\n*   **Story 10:** Cannot set status to 'New' -> Returns **400**.\n*   **Story 10/11:** Cannot update if Parent List is 'Deleted' or 'Deferred' -> Returns **409**.\n*   **Story 10:** Cannot update if Task is 'Deferred' -> Returns **404** (Hidden).\n"
+											},
+											"response": [
+												{
+													"id": "8d82f638-0577-4f64-8b5a-2bcf02e6e01e",
+													"name": "Task updated successfully",
+													"originalRequest": {
+														"method": "PATCH",
+														"header": [
+															{
+																"key": "Content-Type",
+																"value": "application/json"
+															},
+															{
+																"key": "Accept",
+																"value": "application/json"
+															},
+															{
+																"description": "Added as a part of security scheme: bearer",
+																"key": "Authorization",
+																"value": "Bearer <token>"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n  \"title\": \"Buy Milk\",\n  \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"list_id\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"description\": \"2% fat milk, 1 gallon\",\n  \"status\": \"New\",\n  \"priority\": \"Medium\",\n  \"due_date\": \"2023-12-31\",\n  \"created_at\": \"1989-08-22T23:06:15.879Z\",\n  \"updated_at\": \"1989-06-23T04:49:18.084Z\"\n}",
+															"options": {
+																"raw": {
+																	"headerFamily": "json",
+																	"language": "json"
+																}
+															}
+														},
+														"url": {
+															"raw": "{{baseUrl}}/lists/:list_id/tasks/:task_id",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"lists",
+																":list_id",
+																"tasks",
+																":task_id"
+															],
+															"variable": [
+																{
+																	"key": "list_id"
+																},
+																{
+																	"key": "task_id"
+																}
+															]
+														}
+													},
+													"status": "OK",
+													"code": 200,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json",
+															"uuid": "619d252a-1924-4bde-b81e-b59f78395adc"
+														}
+													],
+													"cookie": [],
+													"body": "{\n  \"title\": \"Buy Milk\",\n  \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"list_id\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"description\": \"2% fat milk, 1 gallon\",\n  \"status\": \"New\",\n  \"priority\": \"Medium\",\n  \"due_date\": \"2023-12-31\",\n  \"created_at\": \"1989-08-22T23:06:15.879Z\",\n  \"updated_at\": \"1989-06-23T04:49:18.084Z\"\n}"
+												},
+												{
+													"id": "fa0bd46f-a187-46af-988a-2a26a8f7a4de",
+													"name": "Invalid status transition (e.g., back to New)",
+													"originalRequest": {
+														"method": "PATCH",
+														"header": [
+															{
+																"key": "Content-Type",
+																"value": "application/json"
+															},
+															{
+																"key": "Accept",
+																"value": "application/json"
+															},
+															{
+																"description": "Added as a part of security scheme: bearer",
+																"key": "Authorization",
+																"value": "Bearer <token>"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n  \"title\": \"Buy Milk\",\n  \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"list_id\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"description\": \"2% fat milk, 1 gallon\",\n  \"status\": \"New\",\n  \"priority\": \"Medium\",\n  \"due_date\": \"2023-12-31\",\n  \"created_at\": \"1989-08-22T23:06:15.879Z\",\n  \"updated_at\": \"1989-06-23T04:49:18.084Z\"\n}",
+															"options": {
+																"raw": {
+																	"headerFamily": "json",
+																	"language": "json"
+																}
+															}
+														},
+														"url": {
+															"raw": "{{baseUrl}}/lists/:list_id/tasks/:task_id",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"lists",
+																":list_id",
+																"tasks",
+																":task_id"
+															],
+															"variable": [
+																{
+																	"key": "list_id"
+																},
+																{
+																	"key": "task_id"
+																}
+															]
+														}
+													},
+													"status": "Bad Request",
+													"code": 400,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json",
+															"uuid": "99f32795-41a5-4612-b831-0daaf63c5324"
+														}
+													],
+													"cookie": [],
+													"body": "{\n  \"code\": 404,\n  \"message\": \"List not found\"\n}"
+												},
+												{
+													"id": "9ff0ec8e-b156-4abb-b532-4b04ccd71204",
+													"name": "Task/List not found or is Deleted/Deferred",
+													"originalRequest": {
+														"method": "PATCH",
+														"header": [
+															{
+																"key": "Content-Type",
+																"value": "application/json"
+															},
+															{
+																"key": "Accept",
+																"value": "application/json"
+															},
+															{
+																"description": "Added as a part of security scheme: bearer",
+																"key": "Authorization",
+																"value": "Bearer <token>"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n  \"title\": \"Buy Milk\",\n  \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"list_id\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"description\": \"2% fat milk, 1 gallon\",\n  \"status\": \"New\",\n  \"priority\": \"Medium\",\n  \"due_date\": \"2023-12-31\",\n  \"created_at\": \"1989-08-22T23:06:15.879Z\",\n  \"updated_at\": \"1989-06-23T04:49:18.084Z\"\n}",
+															"options": {
+																"raw": {
+																	"headerFamily": "json",
+																	"language": "json"
+																}
+															}
+														},
+														"url": {
+															"raw": "{{baseUrl}}/lists/:list_id/tasks/:task_id",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"lists",
+																":list_id",
+																"tasks",
+																":task_id"
+															],
+															"variable": [
+																{
+																	"key": "list_id"
+																},
+																{
+																	"key": "task_id"
+																}
+															]
+														}
+													},
+													"status": "Not Found",
+													"code": 404,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json",
+															"uuid": "3c701045-d3e8-451f-80f3-75ae572bfa83"
+														}
+													],
+													"cookie": [],
+													"body": "{\n  \"code\": 404,\n  \"message\": \"List not found\"\n}"
+												},
+												{
+													"id": "2c16ed5d-71f7-4da6-86d3-f775931864e2",
+													"name": "Conflict - Parent List is locked (Deferred/Deleted)",
+													"originalRequest": {
+														"method": "PATCH",
+														"header": [
+															{
+																"key": "Content-Type",
+																"value": "application/json"
+															},
+															{
+																"key": "Accept",
+																"value": "application/json"
+															},
+															{
+																"description": "Added as a part of security scheme: bearer",
+																"key": "Authorization",
+																"value": "Bearer <token>"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n  \"title\": \"Buy Milk\",\n  \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"list_id\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"description\": \"2% fat milk, 1 gallon\",\n  \"status\": \"New\",\n  \"priority\": \"Medium\",\n  \"due_date\": \"2023-12-31\",\n  \"created_at\": \"1989-08-22T23:06:15.879Z\",\n  \"updated_at\": \"1989-06-23T04:49:18.084Z\"\n}",
+															"options": {
+																"raw": {
+																	"headerFamily": "json",
+																	"language": "json"
+																}
+															}
+														},
+														"url": {
+															"raw": "{{baseUrl}}/lists/:list_id/tasks/:task_id",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"lists",
+																":list_id",
+																"tasks",
+																":task_id"
+															],
+															"variable": [
+																{
+																	"key": "list_id"
+																},
+																{
+																	"key": "task_id"
+																}
+															]
+														}
+													},
+													"status": "Conflict",
+													"code": 409,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json",
+															"uuid": "9bc76379-3f5c-420e-a15e-1546e69d391a"
+														}
+													],
+													"cookie": [],
+													"body": "{\n  \"code\": 404,\n  \"message\": \"List not found\"\n}"
+												}
+											]
+										},
+										{
+											"name": "Soft-delete a Task (User Story 12)",
+											"id": "f58d3a22-eb9b-4a78-a644-6b45a081892d",
+											"protocolProfileBehavior": {
+												"disableBodyPruning": true
+											},
+											"request": {
+												"method": "DELETE",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/json"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/lists/:list_id/tasks/:task_id",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"lists",
+														":list_id",
+														"tasks",
+														":task_id"
+													],
+													"variable": [
+														{
+															"key": "list_id",
+															"value": "aac0c082-f062-db1a-12c7-991834ea5f64",
+															"description": "(Required) "
+														},
+														{
+															"key": "task_id",
+															"value": "aac0c082-f062-db1a-12c7-991834ea5f64",
+															"description": "(Required) The UUID of the task"
+														}
+													]
+												},
+												"description": "Changes task status to 'Deleted'.\nReturns **204** if successful.\n"
+											},
+											"response": [
+												{
+													"id": "024f3e7c-ba08-4fb6-99dd-f9ae8219aefe",
+													"name": "Task deleted successfully (No Content)",
+													"originalRequest": {
+														"method": "DELETE",
+														"header": [
+															{
+																"description": "Added as a part of security scheme: bearer",
+																"key": "Authorization",
+																"value": "Bearer <token>"
+															}
+														],
+														"url": {
+															"raw": "{{baseUrl}}/lists/:list_id/tasks/:task_id",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"lists",
+																":list_id",
+																"tasks",
+																":task_id"
+															],
+															"variable": [
+																{
+																	"key": "list_id"
+																},
+																{
+																	"key": "task_id"
+																}
+															]
+														}
+													},
+													"status": "No Content",
+													"code": 204,
+													"_postman_previewlanguage": "text",
+													"header": [],
+													"cookie": [],
+													"body": null
+												},
+												{
+													"id": "900e809d-13a5-4365-93f9-b26114f0dd71",
+													"name": "Task or Parent List not found",
+													"originalRequest": {
+														"method": "DELETE",
+														"header": [
+															{
+																"key": "Accept",
+																"value": "application/json"
+															},
+															{
+																"description": "Added as a part of security scheme: bearer",
+																"key": "Authorization",
+																"value": "Bearer <token>"
+															}
+														],
+														"url": {
+															"raw": "{{baseUrl}}/lists/:list_id/tasks/:task_id",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"lists",
+																":list_id",
+																"tasks",
+																":task_id"
+															],
+															"variable": [
+																{
+																	"key": "list_id"
+																},
+																{
+																	"key": "task_id"
+																}
+															]
+														}
+													},
+													"status": "Not Found",
+													"code": 404,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json",
+															"uuid": "49e02ec3-df1d-4786-b4d4-85bfc34d90db"
+														}
+													],
+													"cookie": [],
+													"body": "{\n  \"code\": 404,\n  \"message\": \"List not found\"\n}"
+												}
+											]
+										}
+									],
+									"id": "65d8be13-e328-4f3f-b998-51863cf2d756"
+								},
+								{
+									"name": "View all tasks in a list (User Story 9)",
+									"id": "d84fdf7b-bf94-4c72-92ce-6516ab50de78",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/lists/:list_id/tasks?page=1&limit=10",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"lists",
+												":list_id",
+												"tasks"
+											],
+											"query": [
+												{
+													"key": "page",
+													"value": "1",
+													"description": "Page number for pagination"
+												},
+												{
+													"key": "limit",
+													"value": "10",
+													"description": "Number of items per page"
+												}
+											],
+											"variable": [
+												{
+													"key": "list_id",
+													"value": "aac0c082-f062-db1a-12c7-991834ea5f64",
+													"description": "(Required) The UUID of the parent list"
+												}
+											]
+										},
+										"description": "Returns a list of all tasks in the specified list.\n**Rule:** Excludes tasks with status 'Deleted'.\n**Rule:** Returns 404 if the Parent List does not exist or is 'Deleted'.\n"
+									},
+									"response": [
+										{
+											"id": "e32a1652-cedf-4738-8207-a2ad7548eb89",
+											"name": "A list of tasks",
+											"originalRequest": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/json"
+													},
+													{
+														"description": "Added as a part of security scheme: bearer",
+														"key": "Authorization",
+														"value": "Bearer <token>"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/lists/:list_id/tasks?page=1&limit=10",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"lists",
+														":list_id",
+														"tasks"
+													],
+													"query": [
+														{
+															"description": "Page number for pagination",
+															"key": "page",
+															"value": "1"
+														},
+														{
+															"description": "Number of items per page",
+															"key": "limit",
+															"value": "10"
+														}
+													],
+													"variable": [
+														{
+															"key": "list_id"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json",
+													"uuid": "fcad53d4-2501-4968-8356-5f18d3b189a6"
+												}
+											],
+											"cookie": [],
+											"body": "[\n  {\n    \"title\": \"Buy Milk\",\n    \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"list_id\": \"123e4567-e89b-12d3-a456-426614174000\",\n    \"description\": \"2% fat milk, 1 gallon\",\n    \"status\": \"New\",\n    \"priority\": \"Medium\",\n    \"due_date\": \"2023-12-31\",\n    \"created_at\": \"1970-05-22T15:31:02.497Z\",\n    \"updated_at\": \"1976-02-07T09:26:42.676Z\"\n  },\n  {\n    \"title\": \"Buy Milk\",\n    \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"list_id\": \"123e4567-e89b-12d3-a456-426614174000\",\n    \"description\": \"2% fat milk, 1 gallon\",\n    \"status\": \"New\",\n    \"priority\": \"Medium\",\n    \"due_date\": \"2023-12-31\",\n    \"created_at\": \"1987-04-27T08:57:10.889Z\",\n    \"updated_at\": \"1975-04-17T23:56:00.779Z\"\n  }\n]"
+										},
+										{
+											"id": "35e4a2a6-65c0-4d04-af35-72c2f79433c0",
+											"name": "Parent List not found or is Deleted",
+											"originalRequest": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/json"
+													},
+													{
+														"description": "Added as a part of security scheme: bearer",
+														"key": "Authorization",
+														"value": "Bearer <token>"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/lists/:list_id/tasks?page=1&limit=10",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"lists",
+														":list_id",
+														"tasks"
+													],
+													"query": [
+														{
+															"description": "Page number for pagination",
+															"key": "page",
+															"value": "1"
+														},
+														{
+															"description": "Number of items per page",
+															"key": "limit",
+															"value": "10"
+														}
+													],
+													"variable": [
+														{
+															"key": "list_id"
+														}
+													]
+												}
+											},
+											"status": "Not Found",
+											"code": 404,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json",
+													"uuid": "30fdc772-9153-4ddf-a317-51fdc882e728"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"code\": 404,\n  \"message\": \"List not found\"\n}"
+										}
+									]
+								},
+								{
+									"name": "Create a new Task (User Story 7)",
+									"id": "98b1a0fd-3079-48d5-91ae-58d92aafe376",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"title\": \"Buy Milk\",\n  \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"list_id\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"description\": \"2% fat milk, 1 gallon\",\n  \"status\": \"New\",\n  \"priority\": \"Medium\",\n  \"due_date\": \"2023-12-31\",\n  \"created_at\": \"1989-08-22T23:06:15.879Z\",\n  \"updated_at\": \"1989-06-23T04:49:18.084Z\"\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/lists/:list_id/tasks",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"lists",
+												":list_id",
+												"tasks"
+											],
+											"variable": [
+												{
+													"key": "list_id",
+													"value": "aac0c082-f062-db1a-12c7-991834ea5f64",
+													"description": "(Required) The UUID of the parent list"
+												}
+											]
+										},
+										"description": "Adds a new task to the list.\n*   **Default Status:** 'New'\n*   **Required:** Title\n\n**Validation Rules:**\n*   Returns **409 Conflict** if Parent List is 'Deleted' or 'Deferred'.\n*   Returns **400** if Title is missing.\n"
+									},
+									"response": [
+										{
+											"id": "cabeb4e2-b68b-418b-818e-66f2cc21538a",
+											"name": "Task created successfully",
+											"originalRequest": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													},
+													{
+														"key": "Accept",
+														"value": "application/json"
+													},
+													{
+														"description": "Added as a part of security scheme: bearer",
+														"key": "Authorization",
+														"value": "Bearer <token>"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"title\": \"Buy Milk\",\n  \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"list_id\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"description\": \"2% fat milk, 1 gallon\",\n  \"status\": \"New\",\n  \"priority\": \"Medium\",\n  \"due_date\": \"2023-12-31\",\n  \"created_at\": \"1989-08-22T23:06:15.879Z\",\n  \"updated_at\": \"1989-06-23T04:49:18.084Z\"\n}",
+													"options": {
+														"raw": {
+															"headerFamily": "json",
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/lists/:list_id/tasks",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"lists",
+														":list_id",
+														"tasks"
+													],
+													"variable": [
+														{
+															"key": "list_id"
+														}
+													]
+												}
+											},
+											"status": "Created",
+											"code": 201,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json",
+													"uuid": "d8d415d5-aa8d-4212-91f0-ce6efe7e108c"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"title\": \"Buy Milk\",\n  \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"list_id\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"description\": \"2% fat milk, 1 gallon\",\n  \"status\": \"New\",\n  \"priority\": \"Medium\",\n  \"due_date\": \"2023-12-31\",\n  \"created_at\": \"1989-08-22T23:06:15.879Z\",\n  \"updated_at\": \"1989-06-23T04:49:18.084Z\"\n}"
+										},
+										{
+											"id": "9afffa38-6caa-4e43-b697-4d504edf1b0c",
+											"name": "Invalid input (Missing Title)",
+											"originalRequest": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													},
+													{
+														"key": "Accept",
+														"value": "application/json"
+													},
+													{
+														"description": "Added as a part of security scheme: bearer",
+														"key": "Authorization",
+														"value": "Bearer <token>"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"title\": \"Buy Milk\",\n  \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"list_id\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"description\": \"2% fat milk, 1 gallon\",\n  \"status\": \"New\",\n  \"priority\": \"Medium\",\n  \"due_date\": \"2023-12-31\",\n  \"created_at\": \"1989-08-22T23:06:15.879Z\",\n  \"updated_at\": \"1989-06-23T04:49:18.084Z\"\n}",
+													"options": {
+														"raw": {
+															"headerFamily": "json",
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/lists/:list_id/tasks",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"lists",
+														":list_id",
+														"tasks"
+													],
+													"variable": [
+														{
+															"key": "list_id"
+														}
+													]
+												}
+											},
+											"status": "Bad Request",
+											"code": 400,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json",
+													"uuid": "61fdf3c9-d7ee-4efd-b3f8-7eabdb2d5397"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"code\": 404,\n  \"message\": \"List not found\"\n}"
+										},
+										{
+											"id": "bef7ad85-b20c-45cc-8011-7cc5d895abea",
+											"name": "Parent List not found",
+											"originalRequest": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													},
+													{
+														"key": "Accept",
+														"value": "application/json"
+													},
+													{
+														"description": "Added as a part of security scheme: bearer",
+														"key": "Authorization",
+														"value": "Bearer <token>"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"title\": \"Buy Milk\",\n  \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"list_id\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"description\": \"2% fat milk, 1 gallon\",\n  \"status\": \"New\",\n  \"priority\": \"Medium\",\n  \"due_date\": \"2023-12-31\",\n  \"created_at\": \"1989-08-22T23:06:15.879Z\",\n  \"updated_at\": \"1989-06-23T04:49:18.084Z\"\n}",
+													"options": {
+														"raw": {
+															"headerFamily": "json",
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/lists/:list_id/tasks",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"lists",
+														":list_id",
+														"tasks"
+													],
+													"variable": [
+														{
+															"key": "list_id"
+														}
+													]
+												}
+											},
+											"status": "Not Found",
+											"code": 404,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json",
+													"uuid": "b1aac8a7-4557-4d7e-a865-186048ff5fc4"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"code\": 404,\n  \"message\": \"List not found\"\n}"
+										},
+										{
+											"id": "484ec3f0-95e2-44a1-9524-a07fe37abd2b",
+											"name": "Conflict - Parent List is Deleted or Deferred",
+											"originalRequest": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													},
+													{
+														"key": "Accept",
+														"value": "application/json"
+													},
+													{
+														"description": "Added as a part of security scheme: bearer",
+														"key": "Authorization",
+														"value": "Bearer <token>"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"title\": \"Buy Milk\",\n  \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"list_id\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"description\": \"2% fat milk, 1 gallon\",\n  \"status\": \"New\",\n  \"priority\": \"Medium\",\n  \"due_date\": \"2023-12-31\",\n  \"created_at\": \"1989-08-22T23:06:15.879Z\",\n  \"updated_at\": \"1989-06-23T04:49:18.084Z\"\n}",
+													"options": {
+														"raw": {
+															"headerFamily": "json",
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/lists/:list_id/tasks",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"lists",
+														":list_id",
+														"tasks"
+													],
+													"variable": [
+														{
+															"key": "list_id"
+														}
+													]
+												}
+											},
+											"status": "Conflict",
+											"code": 409,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json",
+													"uuid": "40706cc7-b351-487c-880d-69ce2cd432af"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"code\": 404,\n  \"message\": \"List not found\"\n}"
+										}
+									]
+								}
+							],
+							"id": "8cf2c673-1db2-41bf-a7d5-7e5ff2fd2e5d"
+						}
+					],
+					"id": "b0ec94c1-4a54-4164-a7ec-11fc82c383d3"
+				},
+				{
+					"name": "Retrieve all active To-Do lists (User Story 2)",
+					"id": "70d75b0b-7d20-46b6-a6f8-65d3a47d76ef",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/lists?page=1&limit=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"lists"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number for pagination"
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "Number of items per page"
+								}
+							]
+						},
+						"description": "Returns a list of all lists that are not in 'Deleted' status.\nIf no lists exist, returns an empty list.\n"
+					},
+					"response": [
+						{
+							"id": "4930515d-172d-47c0-9aa0-2e1303a932e8",
+							"name": "A list of To-Do lists (or empty list)",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"description": "Added as a part of security scheme: bearer",
+										"key": "Authorization",
+										"value": "Bearer <token>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/lists?page=1&limit=10",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"lists"
+									],
+									"query": [
+										{
+											"description": "Page number for pagination",
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"description": "Number of items per page",
+											"key": "limit",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"uuid": "da0500f8-77a7-48ce-a37f-cef62f4cdc04"
+								}
+							],
+							"cookie": [],
+							"body": "[\n  {\n    \"title\": \"Groceries\",\n    \"id\": \"123e4567-e89b-12d3-a456-426614174000\",\n    \"description\": \"Things to buy for the week\",\n    \"status\": \"Active\",\n    \"created_at\": \"2020-04-05T12:36:17.863Z\",\n    \"updated_at\": \"2012-06-29T06:44:20.713Z\"\n  },\n  {\n    \"title\": \"Groceries\",\n    \"id\": \"123e4567-e89b-12d3-a456-426614174000\",\n    \"description\": \"Things to buy for the week\",\n    \"status\": \"Active\",\n    \"created_at\": \"2002-02-17T13:03:45.041Z\",\n    \"updated_at\": \"1951-12-04T22:40:13.344Z\"\n  }\n]"
+						},
+						{
+							"id": "c38b74b3-9982-43c8-a3b3-088bbe04a987",
+							"name": "Server Error",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"description": "Added as a part of security scheme: bearer",
+										"key": "Authorization",
+										"value": "Bearer <token>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/lists?page=1&limit=10",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"lists"
+									],
+									"query": [
+										{
+											"description": "Page number for pagination",
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"description": "Number of items per page",
+											"key": "limit",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"uuid": "28dd37b6-1eed-4e90-8f8f-e98239db2c02"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"code\": 404,\n  \"message\": \"List not found\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Create a new To-Do list (User Story 1)",
+					"id": "7cdec11a-0e6b-4a61-a474-c0d06da641fd",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Groceries\",\n  \"id\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"description\": \"Things to buy for the week\",\n  \"status\": \"Active\",\n  \"created_at\": \"1947-05-21T08:15:23.260Z\",\n  \"updated_at\": \"2008-02-26T12:05:55.764Z\"\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/lists",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"lists"
+							]
+						},
+						"description": "Creates a new list.\n*   **Default Status:** 'Active'\n*   **Required:** Title\n"
+					},
+					"response": [
+						{
+							"id": "5a46ae8c-c3c3-401a-adaf-83d7dcbfc7ab",
+							"name": "List created successfully",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"description": "Added as a part of security scheme: bearer",
+										"key": "Authorization",
+										"value": "Bearer <token>"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"title\": \"Groceries\",\n  \"id\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"description\": \"Things to buy for the week\",\n  \"status\": \"Active\",\n  \"created_at\": \"1947-05-21T08:15:23.260Z\",\n  \"updated_at\": \"2008-02-26T12:05:55.764Z\"\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/lists",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"lists"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"uuid": "488c71ff-5336-4055-805d-ebba30dc722e"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"title\": \"Groceries\",\n  \"id\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"description\": \"Things to buy for the week\",\n  \"status\": \"Active\",\n  \"created_at\": \"1947-05-21T08:15:23.260Z\",\n  \"updated_at\": \"2008-02-26T12:05:55.764Z\"\n}"
+						},
+						{
+							"id": "44c0ac17-6c8b-42fc-a540-7ee17e7fbe7c",
+							"name": "Invalid input (Missing Title)",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"description": "Added as a part of security scheme: bearer",
+										"key": "Authorization",
+										"value": "Bearer <token>"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"title\": \"Groceries\",\n  \"id\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"description\": \"Things to buy for the week\",\n  \"status\": \"Active\",\n  \"created_at\": \"1947-05-21T08:15:23.260Z\",\n  \"updated_at\": \"2008-02-26T12:05:55.764Z\"\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/lists",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"lists"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"uuid": "c309c47e-f099-4e82-a5f9-7a9689b20193"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"code\": 404,\n  \"message\": \"List not found\"\n}"
+						}
+					]
+				}
+			],
+			"id": "6015729f-fb4c-4e01-926e-79511e2c3d2b"
+		},
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "token",
+					"item": [
+						{
+							"name": "Get Access Token (Client Credentials)",
+							"id": "4bf829ec-b4ef-412f-b41a-bc01ec3630b8",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"client_id\": \"ullamco\",\n  \"client_secret\": \"dolore Lorem in do minim\"\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/auth/token",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"auth",
+										"token"
+									]
+								},
+								"description": "Exchange Client ID and Secret for a Bearer Token."
+							},
+							"response": [
+								{
+									"id": "ba6cbdb7-8c7d-4262-b897-8610d3acf7e8",
+									"name": "Successful Response",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"description": "Added as a part of security scheme: bearer",
+												"key": "Authorization",
+												"value": "Bearer <token>"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"client_id\": \"ullamco\",\n  \"client_secret\": \"dolore Lorem in do minim\"\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/auth/token",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"auth",
+												"token"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json",
+											"uuid": "5a061edf-b014-482e-80fe-4de3430b69fd"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"access_token\": \"anim irure occaecat velit\",\n  \"token_type\": \"esse Lorem dolor et ullamco\",\n  \"expires_in\": 83029801\n}"
+								},
+								{
+									"id": "c8558013-b79a-45f6-a151-2e2cce58ef64",
+									"name": "Invalid credentials",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"description": "Added as a part of security scheme: bearer",
+												"key": "Authorization",
+												"value": "Bearer <token>"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"client_id\": \"ullamco\",\n  \"client_secret\": \"dolore Lorem in do minim\"\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/auth/token",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"auth",
+												"token"
+											]
+										}
+									},
+									"status": "Unauthorized",
+									"code": 401,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json",
+											"uuid": "c3c80bec-29d3-4074-a661-6f1da9054821"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"code\": 404,\n  \"message\": \"List not found\"\n}"
+								}
+							]
+						}
+					],
+					"id": "e5a7fd94-2961-4eea-a863-aee349e38cd2"
+				},
+				{
+					"name": "clients",
+					"item": [
+						{
+							"name": "Register a new Client",
+							"id": "639b1efa-cecf-4d5e-83da-b2983c61fedc",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"client_id\": \"proident non nulla nisi\",\n  \"client_secret\": \"esse incididunt\",\n  \"name\": \"in ullamco enim mollit est\"\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/auth/clients",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"auth",
+										"clients"
+									]
+								},
+								"description": "Create a new API Client (Requires Admin Token)."
+							},
+							"response": [
+								{
+									"id": "8d760bc8-ba7c-4256-95fb-b6ae7019dcac",
+									"name": "Client registered",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"description": "Added as a part of security scheme: bearer",
+												"key": "Authorization",
+												"value": "Bearer <token>"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"client_id\": \"proident non nulla nisi\",\n  \"client_secret\": \"esse incididunt\",\n  \"name\": \"in ullamco enim mollit est\"\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/auth/clients",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"auth",
+												"clients"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json",
+											"uuid": "7c84a861-21e6-47f8-83b8-19a7e303e7c0"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"client_id\": \"proident non nulla nisi\",\n  \"client_secret\": \"esse incididunt\",\n  \"name\": \"in ullamco enim mollit est\"\n}"
+								}
+							]
+						}
+					],
+					"id": "f408673a-8404-471b-b8fe-53c020ed285b"
+				}
+			],
+			"id": "6f2005d6-26f5-425a-9765-d6b6e431d2c7"
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{bearerToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"variable": [
+		{
+			"id": "f4bafe03-434c-4694-b586-ab12ea796176",
+			"key": "baseUrl",
+			"value": "http://localhost:8000/v1"
+		}
+	]
+}
