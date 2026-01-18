@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "e9df1431-9a87-47e7-9bb3-310c785511c6",
 		"name": "ToDo API - Public",
-		"description": "A simple API for managing personal task lists. \nThis API allows users to create lists, add tasks, and manage their status.\n\n**Documentation & References:**\n- [Project Requirements](https://github.com/AdamSpalt/todo-list-api/blob/main/docs/REQUIREMENTS.md)\n\n**Key Features:**\n- Create, Read, Update, Delete (CRUD) Lists\n- Manage Tasks within Lists\n- Filter by Status\n\n\nContact Support:\n Name: Adam Spaltenstein\n Email: adam.spaltenstein@gmail.com",
+		"description": "A simple API for managing personal task lists.  \nThis API allows users to create lists, add tasks, and manage their status.\n\n**Documentation & References:**\n\n- [Project Requirements](https://github.com/AdamSpalt/todo-list-api/blob/main/docs/REQUIREMENTS.md)\n    \n\n**Key Features:**\n\n- Create, Read, Update, Delete (CRUD) Lists\n    \n- Manage Tasks within Lists\n    \n- Filter by Status\n    \n\nContact Support:  \nName: Adam Spaltenstein  \nEmail: [adam.spaltenstein@gmail.com](https://mailto:adam.spaltenstein@gmail.com)",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_uid": "40301166-e9df1431-9a87-47e7-9bb3-310c785511c6"
 	},
