@@ -186,6 +186,24 @@ This section provides a consolidated overview of critical business rules. For de
     *   If the parent list or task `ID` does not exist, the API should return a `404 Not Found` error.
     *   Upon a successful deletion (including when the task was already 'Deleted'), the API should return a `204 No Content` status.
 
+### 4.3. Authentication & Integration
+
+#### Story 13: Register Third-Party Client
+*   **As an API Administrator, I want to register new third-party clients, so that they can access the API securely.**
+*   **Acceptance Criteria:**
+    *   The request must be authenticated with a Master Admin Token.
+    *   The request body must contain a `client_id`, `client_secret`, and `name`.
+    *   Upon success, the API returns the registered client details with a `200 OK` status.
+    *   This allows the system to track who is using the API.
+
+#### Story 14: Obtain Access Token
+*   **As a third-party client (Partner), I want to exchange my credentials for an Access Token, so that I can call protected endpoints.**
+*   **Acceptance Criteria:**
+    *   The request body must contain a valid `client_id` and `client_secret`.
+    *   If credentials are valid, the API returns a JWT Access Token with an expiration time (e.g., 24 hours) and `200 OK`.
+    *   If credentials are invalid, the API returns `401 Unauthorized`.
+    *   This token is required for all subsequent API calls (Stories 1-12).
+
 ## 5. Non-Functional Requirements (NFRs)
 
 These requirements define the system's behavioral attributes, ensuring security, reliability, and maintainability.

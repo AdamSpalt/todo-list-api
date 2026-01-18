@@ -395,7 +395,7 @@ paths:
   # -------------------------
   /auth/token:
     post:
-      summary: Get Access Token (Client Credentials)
+      summary: Get Access Token (Client Credentials) (User Story 14)
       description: Exchange Client ID and Secret for a Bearer Token.
       tags:
         - Auth
@@ -422,7 +422,7 @@ paths:
 
   /auth/clients:
     post:
-      summary: Register a new Client
+      summary: Register a new Client (User Story 13)
       description: Create a new API Client (Requires Admin Token).
       tags:
         - Auth
