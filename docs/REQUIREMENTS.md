@@ -43,7 +43,15 @@ This is the single source of truth for all data entities in the system.
 | `created_at` | Timestamp | No | Read-only, System-generated |
 | `updated_at` | Timestamp | No | Read-only, System-generated |
 
-### 2.3. Entity Relationships
+### 2.3. Client Entity (Auth)
+
+| Field | Type | Required? | Notes / Rules |
+| :--- | :--- | :--- | :--- |
+| `client_id` | String | **Yes** | Primary Key, Unique Identifier for the partner |
+| `client_secret` | String | **Yes** | The "password" for the client |
+| `name` | String | **Yes** | Descriptive name (e.g., "Frontend App") |
+
+### 2.4. Entity Relationships
 
 The system is built upon the following structural relationships:
 
