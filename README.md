@@ -27,7 +27,7 @@ A robust RESTful API for managing personal task lists and tasks, built with **Fa
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/<YOUR_USERNAME>/todo-list-api.git
+    git clone https://github.com/AdamSpalt/todo-list-api.git
     cd todo-list-api
     ```
 
@@ -50,8 +50,54 @@ A robust RESTful API for managing personal task lists and tasks, built with **Fa
     uvicorn main:app --reload
     ```
 
+## 🔐 Authentication Guide
+
+This API uses the **Client Credentials Flow** for machine-to-machine authentication.
+
+### 1. Setup (Admin Only)
+First, you must generate a "Master Token" to register new clients.
+1.  Run the local script: `python generate_token.py`
+2.  Copy the generated JWT.
+
+### 2. Register a Client
+Use your Master Token to create credentials for a partner.
+*   **Endpoint:** `POST /v1/auth/clients`
+*   **Header:** `Authorization: Bearer <YOUR_MASTER_TOKEN>`
+*   **Body:**
+    ```json
+    {
+      "client_id": "my-app",
+      "client_secret": "strong-password",
+      "name": "My Frontend App"
+    }
+    ```
+
+### 3. Get an Access Token
+Now, the partner can log in to get a temporary access token.
+*   **Endpoint:** `POST /v1/auth/token`
+*   **Body:**
+    ```json
+    {
+      "client_id": "my-app",
+      "client_secret": "strong-password"
+    }
+    ```
+*   **Response:** Returns an `access_token` (valid for 24 hours).
+
+### 4. Access Protected Data
+Use the Access Token to call API endpoints.
+*   **Header:** `Authorization: Bearer <ACCESS_TOKEN>`
+
 ## 📖 API Documentation
 
-Once the server is running, access the interactive API docs at:
-*   **Swagger UI:** [http://localhost:8000/docs](http://localhost:8000/docs)
-*   **ReDoc:** [http://localhost:8000/redoc](http://localhost:8000/redoc)
+### ☁️ Live Deployment
+*   **Swagger UI (Interactive):** https://todo-list-api.vercel.app/docs
+*   **ReDoc (Static):** https://todo-list-api.vercel.app/redoc
+
+### 🧪 Postman Collection
+
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://raw.githubusercontent.com/AdamSpalt/todo-list-api/refs/heads/main/postman/collections/ToDo%20API%20-%20Public.json)
+
+### 📄 Design & Specifications
+*   **API Contract (YAML):** `index.yaml` - The strict architectural blueprint.
+*   **Requirements:** `docs/REQUIREMENTS.md` - The business logic and user stories.
