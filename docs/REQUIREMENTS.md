@@ -22,7 +22,7 @@ This is the single source of truth for all data entities in the system.
 | Field | Type | Required? | Notes / Rules |
 | :--- | :--- | :--- | :--- |
 | `id` | String | No | UUID, Read-only, System-generated |
-| `user_id` | String | **Yes** | UUID, Link to User (Owner) |
+| `user_id` | String | No | UUID, Extracted from Auth Token |
 | `title` | String | **Yes** | Writable on create/update |
 | `description` | String | No | Writable on create/update |
 | `status` | String | No | Enum ('Active', 'Deferred', 'Deleted'), Default: 'Active' |
