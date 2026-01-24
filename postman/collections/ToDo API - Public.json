@@ -1895,6 +1895,18 @@
 						{
 							"name": "Get Access Token (Client Credentials)",
 							"id": "4bf829ec-b4ef-412f-b41a-bc01ec3630b8",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = pm.response.json();",
+											"pm.collectionVariables.set(\"bearerToken\", jsonData.access_token);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -2168,6 +2180,11 @@
 			"id": "f4bafe03-434c-4694-b586-ab12ea796176",
 			"key": "baseUrl",
 			"value": "http://localhost:8000/v1"
+		},
+		{
+			"id": "auto-generated-token",
+			"key": "bearerToken",
+			"value": ""
 		}
 	]
 }
