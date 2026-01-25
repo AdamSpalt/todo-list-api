@@ -154,9 +154,19 @@ async def http_exception_handler(request, exc):
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request, exc):
+    # Simplify errors to avoid serialization issues with Pydantic v2 'ctx' or 'input' objects
+    # which can cause 500 Internal Server Errors when jsonable_encoder tries to process them.
+    safe_errors = []
+    for err in exc.errors():
+        safe_errors.append({
+            "loc": err.get("loc"),
+            "msg": err.get("msg"),
+            "type": err.get("type")
+        })
+
     return JSONResponse(
         status_code=400,
-        content=jsonable_encoder({"code": 400, "message": "Validation Error", "details": exc.errors()}),
+        content=jsonable_encoder({"code": 400, "message": "Validation Error", "details": safe_errors}),
     )
 
 # -------------------------------------------
