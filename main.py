@@ -428,14 +428,19 @@ def update_task(task_id: UUID, task_update: TaskUpdate, parent_list: ToDoList = 
         raise HTTPException(status_code=400, detail="Cannot revert task status to 'New'")
     
     # 4. Apply updates
-    for key, value in update_data.items():
-        setattr(task, key, value)
-    task.updated_at = datetime.now()
+    try:
+        for key, value in update_data.items():
+            setattr(task, key, value)
+        task.updated_at = datetime.now()
 
-    session.add(task)
-    session.commit()
-    session.refresh(task)
-    return task
+        session.add(task)
+        session.commit()
+        session.refresh(task)
+        return task
+    except Exception as e:
+        session.rollback()
+        print(f"❌ Database Error: {e}")
+        raise HTTPException(status_code=500, detail=f"Database Update Failed: {str(e)}")
 
 @app.delete("/v1/lists/{list_id}/tasks/{task_id}", status_code=204, tags=["Tasks"])
 def delete_task(task_id: UUID, parent_list: ToDoList = Depends(get_valid_list), session: Session = Depends(get_session)):
