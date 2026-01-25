@@ -52,6 +52,13 @@ class ToDoList(SQLModel, table=True):
         # This tells Pydantic to treat Enums as strings
         use_enum_values = True
 
+class ToDoListCreate(SQLModel):
+    title: str
+    description: Optional[str] = None
+
+    class Config:
+        use_enum_values = True
+
 class ToDoListUpdate(SQLModel):
     title: Optional[str] = None
     description: Optional[str] = None
@@ -70,6 +77,15 @@ class Task(SQLModel, table=True):
     due_date: Optional[date] = None
     created_at: Optional[datetime] = Field(default_factory=datetime.now)
     updated_at: Optional[datetime] = Field(default_factory=datetime.now)
+
+    class Config:
+        use_enum_values = True
+
+class TaskCreate(SQLModel):
+    title: str
+    description: Optional[str] = None
+    priority: Optional[TaskPriority] = None
+    due_date: Optional[date] = None
 
     class Config:
         use_enum_values = True
@@ -276,7 +292,10 @@ def register_client(client: Client, user_id: str = Depends(get_current_user), se
     return client
 
 @app.post("/v1/lists", response_model=ToDoList, status_code=201, tags=["Lists"])
-def create_list(todo_list: ToDoList, user_id: str = Depends(get_current_user), session: Session = Depends(get_session)):
+def create_list(list_create: ToDoListCreate, user_id: str = Depends(get_current_user), session: Session = Depends(get_session)):
+    # Convert Input Model -> Database Model
+    todo_list = ToDoList(**list_create.dict())
+    
     # 1. Set system fields
     todo_list.user_id = user_id
     
@@ -380,10 +399,13 @@ def delete_list(id: UUID, user_id: str = Depends(get_current_user), session: Ses
     return
 
 @app.post("/v1/lists/{list_id}/tasks", response_model=Task, status_code=201, tags=["Tasks"])
-def create_task(task: Task, parent_list: ToDoList = Depends(get_valid_list), session: Session = Depends(get_session)):
+def create_task(task_create: TaskCreate, parent_list: ToDoList = Depends(get_valid_list), session: Session = Depends(get_session)):
     # 1. Validate Parent List (Handled by dependency)
     if parent_list.status == ListStatus.DEFERRED:
         raise HTTPException(status_code=409, detail="Cannot add tasks to a Deferred list")
+
+    # Convert Input Model -> Database Model
+    task = Task(**task_create.dict())
 
     # 2. Set system fields
     task.list_id = parent_list.id  # Link the task to the parent list

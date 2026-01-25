@@ -84,7 +84,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ToDoList'
+              $ref: '#/components/schemas/ToDoListCreate'
       responses:
         '201':
           description: List created successfully
@@ -263,7 +263,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Task'
+              $ref: '#/components/schemas/TaskCreate'
       responses:
         '201':
           description: Task created successfully
@@ -490,6 +490,18 @@ components:
           readOnly: true
           description: Timestamp when the list was last modified
 
+    ToDoListCreate:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+          description: The name of the To-Do list
+        description:
+          type: string
+          description: Optional details about the list
+
     ToDoListUpdate:
       type: object
       properties:
@@ -573,6 +585,26 @@ components:
           format: date-time
           readOnly: true
           description: Timestamp when the task was last modified
+
+    TaskCreate:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+          description: The task action item
+        description:
+          type: string
+          description: Detailed notes about the task
+        priority:
+          type: string
+          enum: [Low, Medium, High]
+          description: Urgency level
+        due_date:
+          type: string
+          format: date
+          description: The deadline (YYYY-MM-DD)
 
     TaskUpdate:
       type: object
