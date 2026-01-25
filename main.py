@@ -73,6 +73,16 @@ class Task(SQLModel, table=True):
     class Config:
         use_enum_values = True
 
+class TaskUpdate(SQLModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    status: Optional[TaskStatus] = None
+    priority: Optional[TaskPriority] = None
+    due_date: Optional[date] = None
+
+    class Config:
+        use_enum_values = True
+
 class Client(SQLModel, table=True):
     client_id: str = Field(primary_key=True)
     client_secret: str # In a real production app, this should be hashed!
