@@ -56,6 +56,9 @@ class ToDoListUpdate(SQLModel):
     description: Optional[str] = None
     status: Optional[ListStatus] = None
 
+    class Config:
+        use_enum_values = True
+
 class Task(SQLModel, table=True):
     id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
     list_id: Optional[UUID] = Field(default=None, foreign_key="todolist.id", index=True)
@@ -314,15 +317,20 @@ def update_list(id: UUID, list_update: ToDoListUpdate, user_id: str = Depends(ge
             raise HTTPException(status_code=409, detail="Cannot defer list with 'In-Progress' tasks")
 
     # 3. Update fields
-    update_data = list_update.dict(exclude_unset=True)
-    for key, value in update_data.items():
-        setattr(db_list, key, value)
-    db_list.updated_at = datetime.now()
-    
-    session.add(db_list)
-    session.commit()
-    session.refresh(db_list)
-    return db_list
+    try:
+        update_data = list_update.dict(exclude_unset=True)
+        for key, value in update_data.items():
+            setattr(db_list, key, value)
+        db_list.updated_at = datetime.now()
+        
+        session.add(db_list)
+        session.commit()
+        session.refresh(db_list)
+        return db_list
+    except Exception as e:
+        session.rollback()
+        print(f"❌ Database Error: {e}")
+        raise HTTPException(status_code=500, detail=f"Database Update Failed: {str(e)}")
 
 @app.delete("/v1/lists/{id}", status_code=204, tags=["Lists"])
 def delete_list(id: UUID, user_id: str = Depends(get_current_user), session: Session = Depends(get_session)):
