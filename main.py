@@ -3,6 +3,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.encoders import jsonable_encoder
 from sqlmodel import SQLModel, Field, Session, select, col
 from typing import Optional, List
 from uuid import UUID, uuid4
@@ -154,8 +155,8 @@ async def http_exception_handler(request, exc):
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request, exc):
     return JSONResponse(
-        status_code=422,
-        content={"code": 422, "message": "Validation Error", "details": exc.errors()},
+        status_code=400,
+        content=jsonable_encoder({"code": 400, "message": "Validation Error", "details": exc.errors()}),
     )
 
 # -------------------------------------------
