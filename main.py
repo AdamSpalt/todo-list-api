@@ -51,6 +51,11 @@ class ToDoList(SQLModel, table=True):
         # This tells Pydantic to treat Enums as strings
         use_enum_values = True
 
+class ToDoListUpdate(SQLModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    status: Optional[ListStatus] = None
+
 class Task(SQLModel, table=True):
     id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
     list_id: Optional[UUID] = Field(default=None, foreign_key="todolist.id", index=True)
@@ -288,7 +293,7 @@ def get_list(id: UUID, user_id: str = Depends(get_current_user), session: Sessio
     return todo_list
 
 @app.patch("/v1/lists/{id}", response_model=ToDoList, tags=["Lists"])
-def update_list(id: UUID, list_update: ToDoList, user_id: str = Depends(get_current_user), session: Session = Depends(get_session)):
+def update_list(id: UUID, list_update: ToDoListUpdate, user_id: str = Depends(get_current_user), session: Session = Depends(get_session)):
     # 1. Fetch existing list
     db_list = session.get(ToDoList, id)
     if not db_list or db_list.status == ListStatus.DELETED:
@@ -309,9 +314,9 @@ def update_list(id: UUID, list_update: ToDoList, user_id: str = Depends(get_curr
             raise HTTPException(status_code=409, detail="Cannot defer list with 'In-Progress' tasks")
 
     # 3. Update fields
-    db_list.title = list_update.title
-    db_list.description = list_update.description
-    db_list.status = list_update.status
+    update_data = list_update.dict(exclude_unset=True)
+    for key, value in update_data.items():
+        setattr(db_list, key, value)
     db_list.updated_at = datetime.now()
     
     session.add(db_list)
@@ -387,27 +392,28 @@ def get_task(task_id: UUID, parent_list: ToDoList = Depends(get_valid_list), ses
     return task
 
 @app.patch("/v1/lists/{list_id}/tasks/{task_id}", response_model=Task, tags=["Tasks"])
-def update_task(task_id: UUID, task_update: Task, parent_list: ToDoList = Depends(get_valid_list), session: Session = Depends(get_session)):
+def update_task(task_id: UUID, task_update: TaskUpdate, parent_list: ToDoList = Depends(get_valid_list), session: Session = Depends(get_session)):
     # 1. Validate Parent List (Handled by dependency)
     if parent_list.status == ListStatus.DEFERRED:
         raise HTTPException(status_code=409, detail="Cannot update tasks in a Deferred list")
 
     # 2. Find and Update Task
     task = session.get(Task, task_id)
-    if not task or task.list_id != parent_list.id or task.status == TaskStatus.DELETED:
+    if not task or task.list_id != parent_list.id or task.status in [TaskStatus.DELETED, TaskStatus.DEFERRED]:
         raise HTTPException(status_code=404, detail="Task not found")
 
-    # Business Rule: Cannot revert task status to 'New'
-    if task_update.status == TaskStatus.NEW and task.status != TaskStatus.NEW:
+    # 3. Get update data and validate business rules
+    update_data = task_update.dict(exclude_unset=True)
+
+    # Business Rule: Cannot revert task status to 'New' (Story 10)
+    if "status" in update_data and update_data["status"] == TaskStatus.NEW:
         raise HTTPException(status_code=400, detail="Cannot revert task status to 'New'")
     
-    task.title = task_update.title
-    task.description = task_update.description
-    task.status = task_update.status
-    task.priority = task_update.priority
-    task.due_date = task_update.due_date
+    # 4. Apply updates
+    for key, value in update_data.items():
+        setattr(task, key, value)
     task.updated_at = datetime.now()
-    
+
     session.add(task)
     session.commit()
     session.refresh(task)

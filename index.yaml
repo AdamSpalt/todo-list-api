@@ -148,7 +148,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ToDoList'
+              $ref: '#/components/schemas/ToDoListUpdate'
       responses:
         '200':
           description: List updated successfully
@@ -346,7 +346,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Task'
+              $ref: '#/components/schemas/TaskUpdate'
       responses:
         '200':
           description: Task updated successfully
@@ -490,6 +490,28 @@ components:
           readOnly: true
           description: Timestamp when the list was last modified
 
+    ToDoListUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          description: The name of the To-Do list
+          example: "Groceries"
+        description:
+          type: string
+          description: Optional details about the list
+          example: "Things to buy for the week"
+        status:
+          type: string
+          description: |
+            The lifecycle state of the list.
+            * `Active` - The list is in use.
+            * `Deferred` - The list is paused (Read-Only).
+            * `Deleted` - The list is soft-deleted (Hidden).
+          enum:
+            - Active
+            - Deferred
+            - Deleted
     # -------------------------
     # The "Task" Entity
     # -------------------------
@@ -551,6 +573,41 @@ components:
           format: date-time
           readOnly: true
           description: Timestamp when the task was last modified
+
+    TaskUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          description: The task action item
+          example: "Buy Milk"
+        description:
+          type: string
+          description: Detailed notes about the task
+          nullable: true
+          example: "2% fat milk, 1 gallon"
+        status:
+          type: string
+          description: Current state of the task
+          enum:
+            - New
+            - In-Progress
+            - Completed
+            - Deferred
+            - Deleted
+        priority:
+          type: string
+          description: Urgency level of the task
+          enum:
+            - Low
+            - Medium
+            - High
+          example: Medium
+        due_date:
+          type: string
+          format: date
+          description: The deadline for the task (YYYY-MM-DD)
+          example: "2023-12-31"
 
     # -------------------------
     # Auth Schemas
